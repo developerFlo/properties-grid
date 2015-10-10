@@ -15,6 +15,12 @@ namespace PropertiesGrid.Control
 {
     class PGItemsControl:VirtualizingPanel,IScrollInfo
     {
+        const int SCROLL_CREATE_ITEMS_DELAY_MS = 100;
+        const int CREATE_MARGIN_ELEMENTS = 2;
+
+        VisibleRange _prevVisibleRange = VisibleRange.Empty;
+        VisibleRange _calculatedVisibleRange = VisibleRange.Empty;
+
         public PGItemsControl()
         {
             this.RenderTransform = _trans;
@@ -44,57 +50,78 @@ namespace PropertiesGrid.Control
             UpdateScrollInfo(availableSize);
 
             // Figure out range that's visible based on layout algorithm
-            int firstVisibleItemIndex, lastVisibleItemIndex;
-            GetVisibleRange(out firstVisibleItemIndex, out lastVisibleItemIndex);
+            VisibleRange visibleRange = GetVisibleRange();
+            _prevVisibleRange = visibleRange;
+            Task.Delay(SCROLL_CREATE_ITEMS_DELAY_MS).ContinueWith((t) =>
+            {
+                //Wartet für die angegeben Zeitspanne
+                //Falls sich der angezeigte Bereich in dieser Zeit nicht geändert hat
+                // -> Child-Element erzeugen
+                if(visibleRange.Equals(_prevVisibleRange) && !visibleRange.Equals(_calculatedVisibleRange))
+                {
+                    _calculatedVisibleRange = visibleRange;
+                    CalculateChildren(visibleRange);
+                }
+            }, TaskScheduler.FromCurrentSynchronizationContext());
+            
+            return availableSize;
+        }
 
+        private void CalculateChildren(VisibleRange visibleRange)
+        {
             // We need to access InternalChildren before the generator to work around a bug
             UIElementCollection children = this.InternalChildren;
             IItemContainerGenerator generator = this.ItemContainerGenerator;
 
-            // Get the generator position of the first visible data item
-            GeneratorPosition startPos = generator.GeneratorPositionFromIndex(firstVisibleItemIndex);
+            int columCount = DataSource.Columns.Length;
 
-            // Get index where we'd insert the child for this position. If the item is realized
-            // (position.Offset == 0), it's just position.Index, otherwise we have to add one to
-            // insert after the corresponding child
-            int childIndex = (startPos.Offset == 0) ? startPos.Index : startPos.Index + 1;
-
-            using (generator.StartAt(startPos, GeneratorDirection.Forward, true))
+            int lastRow = visibleRange.firstRow + visibleRange.rowCount;
+            for (int r = visibleRange.firstRow; r < lastRow; r++)
             {
-                for (int itemIndex = firstVisibleItemIndex; itemIndex <= lastVisibleItemIndex; ++itemIndex, ++childIndex)
-                {
-                    bool newlyRealized;
+                int firstVisibleItemInRow = r * columCount + visibleRange.firstCol;
+                int lastVisibleItemInRow = firstVisibleItemInRow + visibleRange.colCount;
+                GeneratorPosition startPos = generator.GeneratorPositionFromIndex(firstVisibleItemInRow);
 
-                    // Get or create the child
-                    UIElement child = generator.GenerateNext(out newlyRealized) as UIElement;
-                    if (newlyRealized)
+                // Get index where we'd insert the child for this position. If the item is realized
+                // (position.Offset == 0), it's just position.Index, otherwise we have to add one to
+                // insert after the corresponding child
+                int childIndex = (startPos.Offset == 0) ? startPos.Index : startPos.Index + 1;
+
+                using (generator.StartAt(startPos, GeneratorDirection.Forward, true))
+                {
+                    for (int itemIndex = firstVisibleItemInRow; itemIndex <= lastVisibleItemInRow; ++itemIndex, ++childIndex)
                     {
-                        // Figure out if we need to insert the child at the end or somewhere in the middle
-                        if (childIndex >= children.Count)
+                        bool newlyRealized;
+
+                        // Get or create the child
+                        UIElement child = generator.GenerateNext(out newlyRealized) as UIElement;
+                        if (newlyRealized)
                         {
-                            base.AddInternalChild(child);
+                            // Figure out if we need to insert the child at the end or somewhere in the middle
+                            if (childIndex >= children.Count)
+                            {
+                                base.AddInternalChild(child);
+                            }
+                            else
+                            {
+                                base.InsertInternalChild(childIndex, child);
+                            }
+                            generator.PrepareItemContainer(child);
                         }
                         else
                         {
-                            base.InsertInternalChild(childIndex, child);
+                            // The child has already been created, let's be sure it's in the right spot
+                            Debug.Assert(child == children[childIndex], "Wrong child was generated");
                         }
-                        generator.PrepareItemContainer(child);
-                    }
-                    else
-                    {
-                        // The child has already been created, let's be sure it's in the right spot
-                        Debug.Assert(child == children[childIndex], "Wrong child was generated");
-                    }
 
-                    // Measurements will depend on layout algorithm
-                    child.Measure(GetChildSize());
+                        // Measurements will depend on layout algorithm
+                        child.Measure(GetChildSize());
+                    }
                 }
             }
 
             // Note: this could be deferred to idle time for efficiency
-            CleanUpItems(firstVisibleItemIndex, lastVisibleItemIndex);
-
-            return availableSize;
+            CleanUpItems(visibleRange, columCount);
         }
 
         /// <summary>
@@ -141,21 +168,26 @@ namespace PropertiesGrid.Control
         /// <summary>
         /// Revirtualize items that are no longer visible
         /// </summary>
-        /// <param name="minDesiredGenerated">first item index that should be visible</param>
-        /// <param name="maxDesiredGenerated">last item index that should be visible</param>
-        private void CleanUpItems(int minDesiredGenerated, int maxDesiredGenerated)
+        private void CleanUpItems(VisibleRange visibleRange, int columCount)
         {
             UIElementCollection children = this.InternalChildren;
-            IItemContainerGenerator generator = this.ItemContainerGenerator;
-
-            for (int i = children.Count - 1; i >= 0; i--)
+            if (children.Count > 0)
             {
-                GeneratorPosition childGeneratorPos = new GeneratorPosition(i, 0);
-                int itemIndex = generator.IndexFromGeneratorPosition(childGeneratorPos);
-                if (itemIndex < minDesiredGenerated || itemIndex > maxDesiredGenerated)
+                IItemContainerGenerator generator = this.ItemContainerGenerator;
+
+                int firstVisibleIndex = visibleRange.firstRow * columCount + visibleRange.firstCol;
+                int lastVisibleIndex = (visibleRange.firstRow + visibleRange.rowCount) * columCount + visibleRange.firstCol + visibleRange.colCount;
+
+                for (int i = children.Count - 1; i >= 0; i--)
                 {
-                    generator.Remove(childGeneratorPos, 1);
-                    RemoveInternalChildRange(i, 1);
+                    GeneratorPosition childGeneratorPos = new GeneratorPosition(i, 0);
+                    int itemIndex = generator.IndexFromGeneratorPosition(childGeneratorPos);
+
+                    if (itemIndex < firstVisibleIndex || itemIndex > lastVisibleIndex)
+                    {
+                        generator.Remove(childGeneratorPos, 1);
+                        RemoveInternalChildRange(i, 1);
+                    }
                 }
             }
         }
@@ -178,18 +210,33 @@ namespace PropertiesGrid.Control
         /// </summary>
         /// <param name="firstVisibleItemIndex">The item index of the first visible item</param>
         /// <param name="lastVisibleItemIndex">The item index of the last visible item</param>
-        private void GetVisibleRange(out int firstVisibleItemIndex, out int lastVisibleItemIndex)
+        private VisibleRange GetVisibleRange()
         {
-            int columns = DataSource.Columns.Length;
-
-            firstVisibleItemIndex = (int)Math.Floor(_offset.Y / PropertiesGridControl.RowHeight) * columns;
-            lastVisibleItemIndex = (int)Math.Ceiling((_offset.Y + _viewport.Height) / PropertiesGridControl.RowHeight) * columns - 1;
-
             ItemsControl itemsControl = ItemsControl.GetItemsOwner(this);
             int itemCount = itemsControl.HasItems ? itemsControl.Items.Count : 0;
-            if (lastVisibleItemIndex >= itemCount)
-                lastVisibleItemIndex = itemCount - 1;
 
+            if (itemCount == 0)
+            {
+                return VisibleRange.Empty;
+            }
+            else { 
+                int columns = DataSource.Columns.Length;
+
+                VisibleRange range = new VisibleRange();
+                range.firstRow = Math.Max(0,(int)Math.Floor(_offset.Y / PropertiesGridControl.RowHeight) - CREATE_MARGIN_ELEMENTS);
+                range.firstCol = (int)Math.Floor(_offset.X / PropertiesGridControl.DataItemWidth);
+                range.rowCount = (int)Math.Ceiling((_viewport.Height) / PropertiesGridControl.RowHeight) + (CREATE_MARGIN_ELEMENTS*2) + 1; //Anstatt +1 wäre korrekterweise der ausgeblendete Teil der ersten Zeile zu beachten
+                range.colCount = (int)Math.Ceiling((_viewport.Width) / PropertiesGridControl.DataItemWidth) + 1; //--||--
+
+                int lastIndex = (range.firstRow + range.rowCount) * columns + range.firstCol + range.colCount;
+                if (lastIndex >= itemCount)
+                {
+                    //Anzeige kann nicht komplett ausgefüllt werden
+                    int maxRowCount = Math.Max(0, itemCount / columns - range.firstRow);
+                    range.rowCount =  Math.Min(maxRowCount, range.rowCount);
+                }
+                return range;
+            }
         }
 
         /// <summary>

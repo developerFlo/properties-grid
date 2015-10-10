@@ -10,8 +10,8 @@ namespace PropertiesGridSample.Common
 {
     class PGSource : IPGSource
     {
-        const int ROW_COUNT = 10;
-        static readonly int? COLUMN_COUNT = 50;
+        const int ROW_COUNT = 100;
+        static readonly int? COLUMN_COUNT = null;
 
         public PGSource()
         {

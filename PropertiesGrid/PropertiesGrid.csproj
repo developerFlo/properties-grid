@@ -52,6 +52,7 @@
     <Compile Include="Classes\PropertiesGridControlViewModel.cs" />
     <Compile Include="Classes\PGItem.cs" />
     <Compile Include="Classes\PGSourceWrapper.cs" />
+    <Compile Include="Classes\VisibleRange.cs" />
     <Compile Include="Control\PGColumnsControl.cs" />
     <Compile Include="Control\PropertiesGridControl.xaml.cs">
       <DependentUpon>PropertiesGridControl.xaml</DependentUpon>
