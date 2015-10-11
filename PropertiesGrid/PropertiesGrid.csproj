@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\ColumnViewModel.cs" />
+    <Compile Include="Classes\PGItemTemplateSelector.cs" />
     <Compile Include="Classes\PGSourceStub.cs" />
     <Compile Include="Classes\PropertiesGridControlViewModel.cs" />
     <Compile Include="Classes\ItemViewModel.cs" />

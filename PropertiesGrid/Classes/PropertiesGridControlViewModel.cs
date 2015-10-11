@@ -121,7 +121,7 @@ namespace PropertiesGrid.Classes
                     row.Properties[p] = prop;
                     for (int c = 0; c < colCount; c++)
                     {
-                        items[itemIndex++] = new ItemViewModel(c, r, p);
+                        items[itemIndex++] = new ItemViewModel(c, r, p, this.Source.Rows[r].Items[c]);
                     }
                 }
                 rows[r] = row;

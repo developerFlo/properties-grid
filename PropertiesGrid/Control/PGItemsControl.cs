@@ -15,7 +15,7 @@ namespace PropertiesGrid.Control
 {
     class PGItemsControl:VirtualizingPanel,IScrollInfo
     {
-        const int SCROLL_CREATE_ITEMS_DELAY_MS = 100;
+        const int SCROLL_CREATE_ITEMS_DELAY_MS = 0;
         const int CREATE_MARGIN_ELEMENTS = 2;
 
         VisibleRange _prevVisibleRange = VisibleRange.Empty;
@@ -51,17 +51,24 @@ namespace PropertiesGrid.Control
             // Figure out range that's visible based on layout algorithm
             VisibleRange visibleRange = GetVisibleRange();
             _prevVisibleRange = visibleRange;
-            Task.Delay(SCROLL_CREATE_ITEMS_DELAY_MS).ContinueWith((t) =>
+            if (SCROLL_CREATE_ITEMS_DELAY_MS == 0)
             {
+                CalculateChildren(visibleRange);
+            }
+            else
+            {
+                Task.Delay(SCROLL_CREATE_ITEMS_DELAY_MS).ContinueWith((t) =>
+                {
                 //Wartet für die angegeben Zeitspanne
                 //Falls sich der angezeigte Bereich in dieser Zeit nicht geändert hat
                 // -> Child-Element erzeugen
-                if(visibleRange.Equals(_prevVisibleRange) && !visibleRange.Equals(_calculatedVisibleRange))
-                {
-                    _calculatedVisibleRange = visibleRange;
-                    CalculateChildren(visibleRange);
-                }
-            }, TaskScheduler.FromCurrentSynchronizationContext());
+                if (visibleRange.Equals(_prevVisibleRange) && !visibleRange.Equals(_calculatedVisibleRange))
+                    {
+                        _calculatedVisibleRange = visibleRange;
+                        CalculateChildren(visibleRange);
+                    }
+                }, TaskScheduler.FromCurrentSynchronizationContext());
+            }
             
             return availableSize;
         }

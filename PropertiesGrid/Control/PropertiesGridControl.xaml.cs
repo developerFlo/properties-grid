@@ -48,6 +48,8 @@ namespace PropertiesGrid.Control
                 this._viewModel.Source = this.DataSource ?? new PGSourceStub();
                 this._viewModel.RebaseOnSource(this.RowTemplate, this.PropertyTemplate, this.ColumnTemplate);
 
+                this.itemTemplateSelector.Templates = this.RowProperties.Select(r => r.ItemTemplate).ToArray();
+
                 this.rowsControl.DataContext = this._viewModel;
                 this.rowsControl.Refresh();
 

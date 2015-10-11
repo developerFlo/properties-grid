@@ -31,7 +31,7 @@
                 </pg:RowProperty>
                 <pg:RowProperty Name="Sik">
                     <DataTemplate>
-                        <TextBlock Text="{Binding Item.Sik}" />
+                        <TextBox Text="{Binding Item.Sik}" />
                     </DataTemplate>
                 </pg:RowProperty>
                 <pg:RowProperty Name="Gaming hours">

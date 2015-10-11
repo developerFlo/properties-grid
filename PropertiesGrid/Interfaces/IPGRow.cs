@@ -9,7 +9,6 @@ namespace PropertiesGrid.Interfaces
 {
     public interface IPGRow
     {
-        string Name { get; }
-        IEnumerable<IPGItem> Items { get; }
+        IPGItem[] Items { get; }
     }
 }

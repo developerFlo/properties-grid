@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PropertiesGrid.Control"
+             xmlns:c="clr-namespace:PropertiesGrid.Classes"
              mc:Ignorable="d" Loaded="UserControl_Loaded"
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid x:Name="mainGrid">
@@ -42,13 +43,16 @@
                         </ScrollViewer>
                     </ControlTemplate>
                 </ItemsControl.Template>
-                <ItemsControl.ItemTemplate>
+                <ItemsControl.ItemTemplateSelector>
+                    <c:PGItemTemplateSelector x:Name="itemTemplateSelector" />
+                </ItemsControl.ItemTemplateSelector>
+                <!--<ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border Background="Red" BorderThickness="1" BorderBrush="Black">
                             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding PropIndex}" />
                         </Border>
                     </DataTemplate>
-                </ItemsControl.ItemTemplate>
+                </ItemsControl.ItemTemplate>-->
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <local:PGItemsControl DataSource="{Binding}" />

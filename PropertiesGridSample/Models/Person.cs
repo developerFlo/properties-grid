@@ -27,19 +27,11 @@ namespace PropertiesGridSample.Models
             set { _dayInfos = value; }
         }
 
-        public IEnumerable<IPGItem> Items
+        public IPGItem[] Items
         {
             get
             {
                 return _dayInfos;
-            }
-        }
-
-        public string Name
-        {
-            get
-            {
-                return string.Format("{0} {1}", _lastName, _firstName);
             }
         }
     }
