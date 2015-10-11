@@ -29,14 +29,13 @@ namespace PropertiesGrid.Control
         #region Dependency Properties
         public static readonly DependencyProperty DataSourceProperty =
             DependencyProperty.RegisterAttached(
-                "DataSource", typeof(PGSourceWrapper), typeof(PGItemsControl),
-                new PropertyMetadata(PGSourceWrapper.Default));
+                "DataSource", typeof(PropertiesGridControlViewModel), typeof(PGItemsControl));
 
-        public PGSourceWrapper DataSource
+        public PropertiesGridControlViewModel DataSource
         {
             get 
             {
-                return (PGSourceWrapper)this.GetValue(DataSourceProperty);
+                return (PropertiesGridControlViewModel)this.GetValue(DataSourceProperty);
             }
             set
             {
@@ -73,7 +72,7 @@ namespace PropertiesGrid.Control
             UIElementCollection children = this.InternalChildren;
             IItemContainerGenerator generator = this.ItemContainerGenerator;
 
-            int columCount = DataSource.Columns.Length;
+            int columCount = DataSource.Source.Columns.Length;
 
             int lastRow = visibleRange.firstRow + visibleRange.rowCount;
             for (int r = visibleRange.firstRow; r < lastRow; r++)
@@ -156,7 +155,7 @@ namespace PropertiesGrid.Control
         /// <param name="finalSize">The size of the panel</param>
         private void ArrangeChild(int itemIndex, UIElement child, Size finalSize)
         {
-            int columns = DataSource.Columns.Length;
+            int columns = DataSource.Source.Columns.Length;
 
             int row = itemIndex / columns;
             int column = itemIndex % columns;
@@ -198,8 +197,8 @@ namespace PropertiesGrid.Control
         /// </summary>
         private Size CalculateExtent()
         {
-            int columns = DataSource.Columns.Length;
-            int rows = DataSource.Rows.Length * DataSource.RowProperties.Length;
+            int columns = DataSource.Source.Columns.Length;
+            int rows = DataSource.Source.Rows.Length * DataSource.Props.Count;
 
             return new Size(PropertiesGridControl.DataItemWidth * columns,
                 PropertiesGridControl.RowHeight * rows);
@@ -220,7 +219,7 @@ namespace PropertiesGrid.Control
                 return VisibleRange.Empty;
             }
             else { 
-                int columns = DataSource.Columns.Length;
+                int columns = DataSource.Source.Columns.Length;
 
                 VisibleRange range = new VisibleRange();
                 range.firstRow = Math.Max(0,(int)Math.Floor(_offset.Y / PropertiesGridControl.RowHeight) - CREATE_MARGIN_ELEMENTS);

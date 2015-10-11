@@ -17,17 +17,6 @@ namespace PropertiesGridSample.Common
         {
             Random r = new Random();
 
-            //Create Some Properties to show per Row
-            RowProperties = new PersonProperty[]
-            {
-                new PersonProperty() { Name="Work hours" },
-                new PersonProperty() { Name="Break time" },
-                new PersonProperty() { Name="On Holiday" },
-                new PersonProperty() { Name="Sik" },
-                new PersonProperty() { Name="Gaming hours" },
-                new PersonProperty() { Name="Stay at" },
-            };
-
             //Create Columns
             int columnsCount = COLUMN_COUNT??Enumerable.Range(1, 12).Select(month => DateTime.DaysInMonth(DateTime.Today.Year, month)).Sum();
             Date[] columns = new Date[columnsCount];
@@ -67,12 +56,7 @@ namespace PropertiesGridSample.Common
         {
             get; set;
         }
-
-        public IPGRowPropertyDef[] RowProperties
-        {
-            get; set;
-        }
-
+        
         public IPGRow[] Rows
         {
             get; set;

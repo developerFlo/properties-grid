@@ -49,9 +49,12 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\ColumnViewModel.cs" />
+    <Compile Include="Classes\PGSourceStub.cs" />
     <Compile Include="Classes\PropertiesGridControlViewModel.cs" />
-    <Compile Include="Classes\PGItem.cs" />
-    <Compile Include="Classes\PGSourceWrapper.cs" />
+    <Compile Include="Classes\ItemViewModel.cs" />
+    <Compile Include="Classes\RowViewModel.cs" />
+    <Compile Include="Control\RowProperty.cs" />
     <Compile Include="Classes\VisibleRange.cs" />
     <Compile Include="Control\PGColumnsControl.cs" />
     <Compile Include="Control\PropertiesGridControl.xaml.cs">
@@ -64,7 +67,7 @@
     <Compile Include="Interfaces\IPGItem.cs" />
     <Compile Include="Interfaces\IPGRowPropertyDef.cs" />
     <Compile Include="Interfaces\IPGSource.cs" />
-    <Compile Include="Classes\PGRowProperty.cs" />
+    <Compile Include="Classes\RowPropertyViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

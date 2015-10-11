@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace PropertiesGrid.Classes
 {
-    class PGItem
+    class ItemViewModel
     {
         int _colIndex;
         int _rowIndex;
         int _propIndex;
 
-        public PGItem(int colIndex, int rowIndex, int propIndex)
+        public ItemViewModel(int colIndex, int rowIndex, int propIndex)
         {
             this._colIndex = colIndex;
             this._rowIndex = rowIndex;

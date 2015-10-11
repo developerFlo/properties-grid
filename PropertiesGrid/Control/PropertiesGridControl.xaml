@@ -34,7 +34,7 @@
             Grid.Column="1"
             BorderBrush="DarkGray"
             BorderThickness="1,1,0,0">
-            <ItemsControl x:Name="itemsControlV2" ItemsSource="{Binding Source.Items}">
+            <ItemsControl x:Name="itemsControlV2" ItemsSource="{Binding Items}">
                 <ItemsControl.Template>
                     <ControlTemplate TargetType="{x:Type ItemsControl}">
                         <ScrollViewer CanContentScroll="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" ScrollChanged="ScrollViewer_ScrollChanged">
@@ -51,11 +51,10 @@
                 </ItemsControl.ItemTemplate>
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <local:PGItemsControl DataSource="{Binding Source}" />
+                        <local:PGItemsControl DataSource="{Binding}" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </Border>
-
     </Grid>
 </UserControl>

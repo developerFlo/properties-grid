@@ -13,21 +13,53 @@
     </Window.Resources>
     <Grid DataContext="{StaticResource ViewModel}">
         <pg:PropertiesGridControl DataSource="{Binding PersonData}">
-            <pg:PropertiesGridControl.HeaderTemplate>
+            <pg:PropertiesGridControl.RowProperties>
+                <pg:RowProperty Name="Work hours">
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Item.WorkHours}" />
+                    </DataTemplate>
+                </pg:RowProperty>
+                <pg:RowProperty Name="Break time">
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Item.BreakTime}" />
+                    </DataTemplate>
+                </pg:RowProperty>
+                <pg:RowProperty Name="On Holiday">
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Item.OnHoliday}" />
+                    </DataTemplate>
+                </pg:RowProperty>
+                <pg:RowProperty Name="Sik">
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Item.Sik}" />
+                    </DataTemplate>
+                </pg:RowProperty>
+                <pg:RowProperty Name="Gaming hours">
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Item.GamingHours}" />
+                    </DataTemplate>
+                </pg:RowProperty>
+                <pg:RowProperty Name="Stay at">
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Item.StayAt}" />
+                    </DataTemplate>
+                </pg:RowProperty>
+            </pg:PropertiesGridControl.RowProperties>
+            <pg:PropertiesGridControl.ColumnTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Name}" />
                 </DataTemplate>
-            </pg:PropertiesGridControl.HeaderTemplate>
-            <pg:PropertiesGridControl.GroupTemplate>
+            </pg:PropertiesGridControl.ColumnTemplate>
+            <pg:PropertiesGridControl.RowTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Name}" />
                 </DataTemplate>
-            </pg:PropertiesGridControl.GroupTemplate>
-            <pg:PropertiesGridControl.GroupPropertyTemplate>
+            </pg:PropertiesGridControl.RowTemplate>
+            <pg:PropertiesGridControl.PropertyTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Prop.Name}" />
+                    <TextBlock Text="{Binding Name}" />
                 </DataTemplate>
-            </pg:PropertiesGridControl.GroupPropertyTemplate>
+            </pg:PropertiesGridControl.PropertyTemplate>
         </pg:PropertiesGridControl>
     </Grid>
 </Window>

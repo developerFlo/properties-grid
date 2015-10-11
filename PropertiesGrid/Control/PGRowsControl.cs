@@ -14,35 +14,34 @@ namespace PropertiesGrid.Control
     {
         double _measuredGroupWidth = 0;
         double _measuredPropWidth = 0;
-        PropertiesGridControl _baseControl;
 
-        public PGRowsControl() { }
+        public PGRowsControl() {}
 
-        internal PropertiesGridControl BaseControl
+        private PropertiesGridControlViewModel ViewModel
         {
-            get { return _baseControl; }
-            set { _baseControl = value; }
+            get
+            {
+                return this.DataContext as PropertiesGridControlViewModel;
+            }
         }
 
-        internal void DataSourceChanged()
+        public void Refresh()
         {
             this.Children.Clear();
-            if (_baseControl.DataSource != null && _baseControl.DataSource.Rows != null && _baseControl.DataSource.RowProperties != null)
+            if (this.ViewModel != null)
             {
-                IEnumerable<IPGRow> rows = _baseControl.DataSource.Rows;
-                IEnumerable<IPGRowPropertyDef> props = _baseControl.DataSource.RowProperties;
-                foreach (IPGRow grp in rows)
+                foreach (RowViewModel row in this.ViewModel.Rows)
                 {
                     //Reihenfolge ist entscheidend für die Arrange-Funktion
-                    foreach (IPGRowPropertyDef prop in props)
+                    foreach (RowPropertyViewModel prop in row.Properties)
                     {
-                        FrameworkElement propElement = _baseControl.GroupPropertyTemplate.LoadContent() as FrameworkElement;
-                        propElement.DataContext = new PGRowProperty(grp, prop);
+                        FrameworkElement propElement = prop.HeaderTemplate.LoadContent() as FrameworkElement;
+                        propElement.DataContext = prop.Prop;
                         this.Children.Add(propElement);
                     }
 
-                    FrameworkElement grpElement = _baseControl.GroupTemplate.LoadContent() as FrameworkElement;
-                    grpElement.DataContext = grp;
+                    FrameworkElement grpElement = row.HeaderTemplate.LoadContent() as FrameworkElement;
+                    grpElement.DataContext = row.Row;
                     this.Children.Add(grpElement);
                 }
             }
@@ -50,16 +49,18 @@ namespace PropertiesGrid.Control
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            if (_baseControl != null && _baseControl.DataSource != null && _baseControl.DataSource.Rows != null && _baseControl.DataSource.RowProperties != null)
+            if (this.ViewModel != null)
             {
                 double width = availableSize.Width;
+                int rowPropertiesCount = this.ViewModel.Props.Count;
+
                 if (double.IsPositiveInfinity(width))
                 {
                     //Größe nicht vom übergeorndeten Element festgesetzt -> Größe auf Grund des Inhaltes ermitteln
                     double groupWidth = 0;
                     double propWidth = 0;
 
-                    double availableGroupHeight = PropertiesGridControl.RowHeight * _baseControl.DataSource.RowProperties.Length;
+                    double availableGroupHeight = PropertiesGridControl.RowHeight * rowPropertiesCount;
                     foreach (FrameworkElement e in this.Children.OfType<FrameworkElement>())
                     {
                         if (e.DataContext is IPGRow)
@@ -69,7 +70,7 @@ namespace PropertiesGrid.Control
 
                             groupWidth = Math.Max(groupWidth, e.DesiredSize.Width);
                         }
-                        else if (e.DataContext is PGRowProperty)
+                        else if (e.DataContext is RowProperty)
                         {
                             if (!e.IsMeasureValid)
                                 e.Measure(new Size(double.PositiveInfinity, PropertiesGridControl.RowHeight));
@@ -83,11 +84,11 @@ namespace PropertiesGrid.Control
                     width = groupWidth + propWidth;
                 }
 
-                int rows = _baseControl.DataSource.Rows.Length;
+                int rows = this.ViewModel.Rows.Length;
                 return new Size()
                 {
                     Width = width,
-                    Height = rows * PropertiesGridControl.RowHeight * _baseControl.DataSource.RowProperties.Length + 100 //+100 damit es sicher höher als die Scrollbar ist
+                    Height = rows * PropertiesGridControl.RowHeight * rowPropertiesCount + 100 //+100 damit es sicher höher als die Scrollbar ist
                 };
             }
             else
@@ -100,11 +101,11 @@ namespace PropertiesGrid.Control
         {
             Rect finalRect = new Rect(0, 0, finalSize.Width, finalSize.Height);
 
-            if (_baseControl != null && _baseControl.DataSource != null && _baseControl.DataSource.Rows != null && _baseControl.DataSource.RowProperties != null)
+            if (this.ViewModel != null)
             {
                 int rowIndex = 0;
                 int rowPropIndex = 0;
-                int rowPropertiesCount = _baseControl.DataSource.RowProperties.Length;
+                int rowPropertiesCount = this.ViewModel.Props.Count;
                 foreach (FrameworkElement e in this.Children.OfType<FrameworkElement>())
                 {
                     if (e.DataContext is IPGRow)
@@ -118,7 +119,7 @@ namespace PropertiesGrid.Control
                         rowIndex++;
                         rowPropIndex = 0;
                     }
-                    else if (e.DataContext is PGRowProperty)
+                    else if (e.DataContext is RowProperty)
                     {
                         e.Arrange(new Rect(
                             x: _measuredGroupWidth,

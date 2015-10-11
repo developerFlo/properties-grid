@@ -73,7 +73,6 @@
     <Compile Include="Models\Date.cs" />
     <Compile Include="Models\DayInfo.cs" />
     <Compile Include="Models\Person.cs" />
-    <Compile Include="Models\PersonProperty.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

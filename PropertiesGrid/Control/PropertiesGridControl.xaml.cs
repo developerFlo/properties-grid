@@ -2,6 +2,7 @@
 using PropertiesGrid.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,29 +33,27 @@ namespace PropertiesGrid.Control
             this.InitializeComponent();
             this._viewModel = new PropertiesGridControlViewModel();
             this.mainGrid.DataContext = this._viewModel;
-            this.columnsControl.BaseControl = this;
-            this.rowsControl.BaseControl = this;
         }
 
-        private async void UserControl_Loaded(object sender, RoutedEventArgs e)
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            await ReloadData();
+            ReloadData();
         }
 
-        private async Task ReloadData()
+        private void ReloadData()
         {
-            if (this.DataSource == null)
+            if (this.RowProperties.Count > 0 && this.DataSource != null)
             {
-                this._viewModel.Source = PGSourceWrapper.Default;
-            }
-            else
-            {
-                this._viewModel.Source = await PGSourceWrapper.CreateWrapperAsync(this.DataSource);
+                this._viewModel.Props = this.RowProperties;
+                this._viewModel.Source = this.DataSource ?? new PGSourceStub();
+                this._viewModel.RebaseOnSource(this.RowTemplate, this.PropertyTemplate, this.ColumnTemplate);
 
-            }
+                this.rowsControl.DataContext = this._viewModel;
+                this.rowsControl.Refresh();
 
-            this.columnsControl.DataSourceChanged();
-            this.rowsControl.DataSourceChanged();
+                this.columnsControl.DataContext = this._viewModel;
+                this.columnsControl.Refresh();
+            }
         }
 
         #region Dependency Properties
@@ -63,17 +62,22 @@ namespace PropertiesGrid.Control
                   "DataSource", typeof(IPGSource), typeof(PropertiesGridControl),
                   new PropertyMetadata(null, DataSourceChanged));
 
-        public static readonly DependencyProperty GroupTemplateProperty =
-          DependencyProperty.Register(
-              "GroupTemplate", typeof(DataTemplate), typeof(PropertiesGridControl));
+        public static readonly DependencyProperty RowPropertiesProperty =
+            DependencyProperty.Register(
+            "RowProperties", typeof(ObservableCollection<RowProperty>), typeof(PropertiesGridControl),
+            new PropertyMetadata(new ObservableCollection<RowProperty>(), RowPropertiesChanged));
 
-        public static readonly DependencyProperty GroupPropertyTemplateProperty =
+        public static readonly DependencyProperty RowTemplateProperty =
           DependencyProperty.Register(
-              "GroupPropertyTemplate", typeof(DataTemplate), typeof(PropertiesGridControl));
+              "RowTemplate", typeof(DataTemplate), typeof(PropertiesGridControl));
 
-        public static readonly DependencyProperty HeaderTemplateProperty =
+        public static readonly DependencyProperty PropertyTemplateProperty =
           DependencyProperty.Register(
-              "HeaderTemplate", typeof(DataTemplate), typeof(PropertiesGridControl));
+              "PropertyTemplate", typeof(DataTemplate), typeof(PropertiesGridControl));
+
+        public static readonly DependencyProperty ColumnTemplateProperty =
+          DependencyProperty.Register(
+              "ColumnTemplate", typeof(DataTemplate), typeof(PropertiesGridControl));
 
         public IPGSource DataSource
         {
@@ -87,46 +91,57 @@ namespace PropertiesGrid.Control
             }
         }
 
-        public DataTemplate GroupTemplate
+        public ObservableCollection<RowProperty> RowProperties
+        {
+            get { return (ObservableCollection<RowProperty>)this.GetValue(RowPropertiesProperty); }
+            set { this.SetValue(RowPropertiesProperty, value); }
+        }
+
+        public DataTemplate RowTemplate
         {
             get
             {
-                return (DataTemplate)this.GetValue(GroupTemplateProperty);
+                return (DataTemplate)this.GetValue(RowTemplateProperty);
             }
             set
             {
-                this.SetValue(GroupTemplateProperty, value);
+                this.SetValue(RowTemplateProperty, value);
             }
         }
 
-        public DataTemplate GroupPropertyTemplate
+        public DataTemplate PropertyTemplate
         {
             get
             {
-                return (DataTemplate)this.GetValue(GroupPropertyTemplateProperty);
+                return (DataTemplate)this.GetValue(PropertyTemplateProperty);
             }
             set
             {
-                this.SetValue(GroupPropertyTemplateProperty, value);
+                this.SetValue(PropertyTemplateProperty, value);
             }
         }
 
-        public DataTemplate HeaderTemplate
+        public DataTemplate ColumnTemplate
         {
             get
             {
-                return (DataTemplate)this.GetValue(HeaderTemplateProperty);
+                return (DataTemplate)this.GetValue(ColumnTemplateProperty);
             }
             set
             {
-                this.SetValue(HeaderTemplateProperty, value);
+                this.SetValue(ColumnTemplateProperty, value);
             }
         }
-
-        private static async void DataSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void RowPropertiesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             PropertiesGridControl c = ((PropertiesGridControl)d);
-            await c.ReloadData();
+            c.ReloadData();
+        }
+
+        private static void DataSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            PropertiesGridControl c = ((PropertiesGridControl)d);
+            c.ReloadData();
         }
 
         #endregion

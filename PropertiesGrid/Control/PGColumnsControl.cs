@@ -1,4 +1,5 @@
-﻿using PropertiesGrid.Interfaces;
+﻿using PropertiesGrid.Classes;
+using PropertiesGrid.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,27 +12,26 @@ namespace PropertiesGrid.Control
 {
     class PGColumnsControl:Panel
     {
-        PropertiesGridControl _baseControl;
-
         public PGColumnsControl() { }
 
-        internal PropertiesGridControl BaseControl
+        private PropertiesGridControlViewModel ViewModel
         {
-            get { return _baseControl; }
-            set { _baseControl = value; }
+            get
+            {
+                return this.DataContext as PropertiesGridControlViewModel;
+            }
         }
 
-        internal void DataSourceChanged()
+        public void Refresh()
         {
             this.Children.Clear();
-            if (_baseControl.DataSource != null && _baseControl.DataSource.Columns != null)
+            if (this.ViewModel != null)
             {
-                IEnumerable<IPGColumn> columns = _baseControl.DataSource.Columns;
-                foreach (IPGColumn col in columns)
+                ColumnViewModel[] columns = this.ViewModel.Columns;
+                foreach (ColumnViewModel col in columns)
                 {
-                    FrameworkElement obj = _baseControl.HeaderTemplate.LoadContent() as FrameworkElement;
-                    obj.DataContext = col;
-                    col.UIElement = obj;
+                    FrameworkElement obj = col.HeaderTemplate.LoadContent() as FrameworkElement;
+                    obj.DataContext = col.Column;
                     this.Children.Add(obj);
                 }
             }
@@ -39,7 +39,7 @@ namespace PropertiesGrid.Control
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            if (_baseControl != null && _baseControl.DataSource != null && _baseControl.DataSource.Columns != null)
+            if (this.ViewModel != null)
             {
                 double height = availableSize.Height;
                 if (double.IsPositiveInfinity(height))
@@ -54,7 +54,7 @@ namespace PropertiesGrid.Control
                     }
                 }
 
-                int dataColumns = _baseControl.DataSource.Columns.Length;
+                int dataColumns = this.ViewModel.Columns.Length;
                 return new Size()
                 {
                     Width = dataColumns * PropertiesGridControl.DataItemWidth + 100, //+100 damit es sicher breiter als die Scrollbar ist,
@@ -71,20 +71,16 @@ namespace PropertiesGrid.Control
         {
             Rect finalRect = new Rect(0, 0, finalSize.Width, finalSize.Height);
 
-            if (_baseControl != null && _baseControl.DataSource != null && _baseControl.DataSource.Columns != null)
+            if (this.ViewModel != null)
             {
-                IEnumerable<IPGColumn> columns = _baseControl.DataSource.Columns;
                 int colIndex = 0;
-                foreach (IPGColumn col in columns)
+                foreach (UIElement e in this.Children)
                 {
-                    if (col.UIElement != null)
-                    {
-                        col.UIElement.Arrange(new Rect(
-                            x: colIndex * PropertiesGridControl.DataItemWidth,
-                            y: 0,
-                            width: PropertiesGridControl.DataItemWidth,
-                            height: finalSize.Height));
-                    }
+                    e.Arrange(new Rect(
+                        x: colIndex * PropertiesGridControl.DataItemWidth,
+                        y: 0,
+                        width: PropertiesGridControl.DataItemWidth,
+                        height: finalSize.Height));
                     colIndex++;
                 }
             }

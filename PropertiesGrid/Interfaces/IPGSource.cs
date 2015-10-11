@@ -10,6 +10,5 @@ namespace PropertiesGrid.Interfaces
     {
         IPGRow[] Rows { get; }
         IPGColumn[] Columns { get; }
-        IPGRowPropertyDef[] RowProperties { get; }
     }
 }
