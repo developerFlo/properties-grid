@@ -10,6 +10,5 @@ namespace PropertiesGrid.Interfaces
     public interface IPGColumn
     {
         string Name { get; }
-        FrameworkElement UIElement { get; set; }
     }
 }

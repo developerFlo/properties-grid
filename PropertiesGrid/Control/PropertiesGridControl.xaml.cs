@@ -24,7 +24,7 @@ namespace PropertiesGrid.Control
     public partial class PropertiesGridControl : UserControl
     {
         internal const double DataItemWidth = 40;
-        internal const double RowHeight = 30;
+        internal const double RowHeight = 22;
 
         PropertiesGridControlViewModel _viewModel;
 
@@ -55,6 +55,8 @@ namespace PropertiesGrid.Control
 
                 this.columnsControl.DataContext = this._viewModel;
                 this.columnsControl.Refresh();
+
+                this._viewModel.SetUpToDate();
             }
         }
 
@@ -150,8 +152,11 @@ namespace PropertiesGrid.Control
 
         private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            this.columnsScroll.ScrollToHorizontalOffset(e.HorizontalOffset);
-            this.rowsScroll.ScrollToVerticalOffset(e.VerticalOffset);
+            if (e.Source is ScrollViewer)
+            {
+                this.columnsScroll.ScrollToHorizontalOffset(e.HorizontalOffset);
+                this.rowsScroll.ScrollToVerticalOffset(e.VerticalOffset);
+            }
         }
 
         private void rowsScroll_PreviewMouseWheel(object sender, MouseWheelEventArgs e)

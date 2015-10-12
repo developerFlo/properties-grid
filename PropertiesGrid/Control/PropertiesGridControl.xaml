@@ -16,26 +16,28 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <ScrollViewer  x:Name="columnsScroll"
-                       Grid.Column="1"
+        <Border Grid.Column="1" BorderThickness="1,0,0,0">
+            <ScrollViewer  x:Name="columnsScroll"
                        VerticalScrollBarVisibility="Disabled"
                        HorizontalScrollBarVisibility="Hidden"
                        PreviewMouseWheel="columnsScroll_PreviewMouseWheel">
-            <local:PGColumnsControl x:Name="columnsControl" />
-        </ScrollViewer>
-        <ScrollViewer  x:Name="rowsScroll"
-                       Grid.Row="1"
+                <local:PGColumnsControl x:Name="columnsControl" />
+            </ScrollViewer>
+        </Border>
+        <Border Grid.Row="1" BorderThickness="0,1,0,0" BorderBrush="DarkGray">
+            <ScrollViewer  x:Name="rowsScroll"
                        VerticalScrollBarVisibility="Hidden"
                        HorizontalScrollBarVisibility="Disabled"
                        PreviewMouseWheel="rowsScroll_PreviewMouseWheel">
-            <local:PGRowsControl x:Name="rowsControl" />
-        </ScrollViewer>
+                <local:PGRowsControl x:Name="rowsControl" />
+            </ScrollViewer>
+        </Border>
         <Border
             Grid.Row="1" 
             Grid.Column="1"
             BorderBrush="DarkGray"
             BorderThickness="1,1,0,0">
-            <ItemsControl x:Name="itemsControlV2" ItemsSource="{Binding Items}">
+            <ItemsControl ItemsSource="{Binding Items}">
                 <ItemsControl.Template>
                     <ControlTemplate TargetType="{x:Type ItemsControl}">
                         <ScrollViewer CanContentScroll="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" ScrollChanged="ScrollViewer_ScrollChanged">
@@ -46,13 +48,6 @@
                 <ItemsControl.ItemTemplateSelector>
                     <c:PGItemTemplateSelector x:Name="itemTemplateSelector" />
                 </ItemsControl.ItemTemplateSelector>
-                <!--<ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border Background="Red" BorderThickness="1" BorderBrush="Black">
-                            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding PropIndex}" />
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>-->
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <local:PGItemsControl DataSource="{Binding}" />

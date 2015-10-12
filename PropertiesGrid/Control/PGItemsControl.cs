@@ -15,7 +15,7 @@ namespace PropertiesGrid.Control
 {
     class PGItemsControl:VirtualizingPanel,IScrollInfo
     {
-        const int SCROLL_CREATE_ITEMS_DELAY_MS = 0;
+        const int SCROLL_CREATE_ITEMS_DELAY_MS = 50;
         const int CREATE_MARGIN_ELEMENTS = 2;
 
         VisibleRange _prevVisibleRange = VisibleRange.Empty;
@@ -29,7 +29,8 @@ namespace PropertiesGrid.Control
         #region Dependency Properties
         public static readonly DependencyProperty DataSourceProperty =
             DependencyProperty.RegisterAttached(
-                "DataSource", typeof(PropertiesGridControlViewModel), typeof(PGItemsControl));
+                "DataSource", typeof(PropertiesGridControlViewModel), typeof(PGItemsControl),
+                new PropertyMetadata(DataSource_Changed));
 
         public PropertiesGridControlViewModel DataSource
         {
@@ -42,7 +43,27 @@ namespace PropertiesGrid.Control
                 this.SetValue(DataSourceProperty, value);
             }
         }
+
+        private static void DataSource_Changed(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue != null && e.OldValue == null)
+            {
+                //Bei der initialen Zuweisung Event-Handler hinterlegen
+                PGItemsControl c = (PGItemsControl)d;
+                ((PropertiesGridControlViewModel)e.NewValue).OnSourceUpdated += c.PGItemsControl_OnSourceUpdated;
+            }
+        }
+
+        void PGItemsControl_OnSourceUpdated(object sender, EventArgs e)
+        {
+            Refresh();
+        }
         #endregion
+
+        public void Refresh()
+        {
+            _calculatedVisibleRange = VisibleRange.Empty;
+        }
 
         protected override Size MeasureOverride(Size availableSize)
         {
@@ -117,11 +138,12 @@ namespace PropertiesGrid.Control
                         else
                         {
                             // The child has already been created, let's be sure it's in the right spot
-                            Debug.Assert(child == children[childIndex], "Wrong child was generated");
+                            //Debug.Assert(child == children[childIndex], "Wrong child was generated");
                         }
 
                         // Measurements will depend on layout algorithm
-                        child.Measure(GetChildSize());
+                        if(child != null)
+                            child.Measure(GetChildSize());
                     }
                 }
             }
@@ -179,6 +201,7 @@ namespace PropertiesGrid.Control
             UIElementCollection children = this.InternalChildren;
             if (children.Count > 0)
             {
+                ItemsControl itemsControl = ItemsControl.GetItemsOwner(this);
                 IItemContainerGenerator generator = this.ItemContainerGenerator;
 
                 int firstVisibleIndex = visibleRange.firstRow * columCount + visibleRange.firstCol;
@@ -191,8 +214,11 @@ namespace PropertiesGrid.Control
 
                     if (itemIndex < firstVisibleIndex || itemIndex > lastVisibleIndex)
                     {
-                        generator.Remove(childGeneratorPos, 1);
-                        RemoveInternalChildRange(i, 1);
+                        if (!((ItemViewModel)itemsControl.Items.GetItemAt(itemIndex)).InEditMode)
+                        {
+                            generator.Remove(childGeneratorPos, 1);
+                            RemoveInternalChildRange(i, 1);
+                        }
                     }
                 }
             }
@@ -232,7 +258,7 @@ namespace PropertiesGrid.Control
                 range.firstRow = Math.Max(0,(int)Math.Floor(_offset.Y / PropertiesGridControl.RowHeight) - CREATE_MARGIN_ELEMENTS);
                 range.firstCol = (int)Math.Floor(_offset.X / PropertiesGridControl.DataItemWidth);
                 range.rowCount = (int)Math.Ceiling((_viewport.Height) / PropertiesGridControl.RowHeight) + (CREATE_MARGIN_ELEMENTS*2) + 1; //Anstatt +1 wäre korrekterweise der ausgeblendete Teil der ersten Zeile zu beachten
-                range.colCount = (int)Math.Ceiling((_viewport.Width) / PropertiesGridControl.DataItemWidth) + 1; //--||--
+                range.colCount = Math.Min(columns-range.firstCol,(int)Math.Ceiling((_viewport.Width) / PropertiesGridControl.DataItemWidth) + 1); //--||--
 
                 int lastIndex = (range.firstRow + range.rowCount) * columns + range.firstCol + range.colCount;
                 if (lastIndex >= itemCount)

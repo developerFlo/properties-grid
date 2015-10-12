@@ -19,6 +19,8 @@ namespace PropertiesGrid.Classes
         ColumnViewModel[] _columns;
         ObservableCollection<RowProperty> _props;
 
+        public event EventHandler OnSourceUpdated;
+
         public PropertiesGridControlViewModel()
         {
             _source = new PGSourceStub();
@@ -26,6 +28,12 @@ namespace PropertiesGrid.Classes
             _rows = new RowViewModel[0];
             Columns = new ColumnViewModel[0];
             _props = new ObservableCollection<RowProperty>();
+        }
+
+        public void SetUpToDate()
+        {
+            if (OnSourceUpdated != null)
+                OnSourceUpdated(this, EventArgs.Empty);
         }
         
         public ItemViewModel[] Items
@@ -121,7 +129,7 @@ namespace PropertiesGrid.Classes
                     row.Properties[p] = prop;
                     for (int c = 0; c < colCount; c++)
                     {
-                        items[itemIndex++] = new ItemViewModel(c, r, p, this.Source.Rows[r].Items[c]);
+                        items[itemIndex++] = new ItemViewModel(c, r, p, this.Source.Rows[r].Items[c], this.Source.Columns[c]);
                     }
                 }
                 rows[r] = row;
