@@ -17,7 +17,7 @@ namespace PropertiesGrid.Classes
         ItemViewModel[] _items;
         RowViewModel[] _rows;
         ColumnViewModel[] _columns;
-        ObservableCollection<RowProperty> _props;
+        RowProperty[] _props;
 
         public event EventHandler OnSourceUpdated;
 
@@ -26,8 +26,8 @@ namespace PropertiesGrid.Classes
             _source = new PGSourceStub();
             _items = new ItemViewModel[0];
             _rows = new RowViewModel[0];
-            Columns = new ColumnViewModel[0];
-            _props = new ObservableCollection<RowProperty>();
+            _columns = new ColumnViewModel[0];
+            _props = new RowProperty[0];
         }
 
         public void SetUpToDate()
@@ -74,7 +74,7 @@ namespace PropertiesGrid.Classes
             }
         }
 
-        public ObservableCollection<RowProperty> Props
+        public RowProperty[] Props
         {
             get
             {
@@ -111,7 +111,7 @@ namespace PropertiesGrid.Classes
         public void RebaseOnSource(DataTemplate rowTemplate, DataTemplate propertyTemplate, DataTemplate columnTemplate)
         {
             int rowCount = this.Source.Rows.Length;
-            int propCount = this.Props.Count;
+            int propCount = this.Props.Length;
             int colCount = this.Source.Columns.Length;
             RowViewModel[] rows = new RowViewModel[rowCount];
             ColumnViewModel[] columns = new ColumnViewModel[colCount];

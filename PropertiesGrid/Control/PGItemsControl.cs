@@ -231,7 +231,7 @@ namespace PropertiesGrid.Control
         private Size CalculateExtent()
         {
             int columns = DataSource.Source.Columns.Length;
-            int rows = DataSource.Source.Rows.Length * DataSource.Props.Count;
+            int rows = DataSource.Source.Rows.Length * DataSource.Props.Length;
 
             return new Size(PropertiesGridControl.DataItemWidth * columns,
                 PropertiesGridControl.RowHeight * rows);

@@ -44,7 +44,7 @@ namespace PropertiesGrid.Control
         {
             if (this.RowProperties.Count > 0 && this.DataSource != null)
             {
-                this._viewModel.Props = this.RowProperties;
+                this._viewModel.Props = this.RowProperties.Where(p => p.IsVisible == true).ToArray();
                 this._viewModel.Source = this.DataSource ?? new PGSourceStub();
                 this._viewModel.RebaseOnSource(this.RowTemplate, this.PropertyTemplate, this.ColumnTemplate);
 

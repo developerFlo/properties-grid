@@ -20,16 +20,27 @@ namespace PropertiesGrid.Control
             DependencyProperty.Register(
             "Name", typeof(string), typeof(RowProperty));
 
+        public static readonly DependencyProperty IsVisibleProperty =
+            DependencyProperty.Register(
+            "IsVisible", typeof(bool), typeof(RowProperty),
+            new PropertyMetadata(true));
+
+        public DataTemplate ItemTemplate
+        {
+            get { return (DataTemplate)this.GetValue(ItemTemplateProperty); }
+            set { this.SetValue(ItemTemplateProperty, value); }
+        }
+
         public string Name
         {
             get { return (string)this.GetValue(NameProperty); }
             set { this.SetValue(NameProperty, value); }
         }
 
-        public DataTemplate ItemTemplate
+        public bool IsVisible
         {
-            get { return (DataTemplate)this.GetValue(ItemTemplateProperty); }
-            set { this.SetValue(ItemTemplateProperty, value); }
+            get { return (bool)this.GetValue(IsVisibleProperty); }
+            set { this.SetValue(IsVisibleProperty, value); }
         }
         #endregion
     }

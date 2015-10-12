@@ -52,7 +52,7 @@ namespace PropertiesGrid.Control
             if (this.ViewModel != null)
             {
                 double width = availableSize.Width;
-                int rowPropertiesCount = this.ViewModel.Props.Count;
+                int rowPropertiesCount = this.ViewModel.Props.Length;
 
                 if (double.IsPositiveInfinity(width))
                 {
@@ -105,7 +105,7 @@ namespace PropertiesGrid.Control
             {
                 int rowIndex = 0;
                 int rowPropIndex = 0;
-                int rowPropertiesCount = this.ViewModel.Props.Count;
+                int rowPropertiesCount = this.ViewModel.Props.Length;
                 foreach (FrameworkElement e in this.Children.OfType<FrameworkElement>())
                 {
                     if (e.DataContext is IPGRow)
