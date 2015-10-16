@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace PropertiesGrid.Interfaces
 {
-    public interface IPGRowPropertyDef
+    public interface IPGUIElementViewModel
     {
-        string Name { get; }
+        object DataItem { get; }
     }
 }

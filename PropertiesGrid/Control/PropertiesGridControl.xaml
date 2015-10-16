@@ -7,6 +7,9 @@
              xmlns:c="clr-namespace:PropertiesGrid.Classes"
              mc:Ignorable="d" Loaded="UserControl_Loaded"
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <c:EmptyItemsToHiddenConverter x:Key="EmptyItemsToHiddenConverter" />
+    </UserControl.Resources>
     <Grid x:Name="mainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -36,7 +39,8 @@
             Grid.Row="1" 
             Grid.Column="1"
             BorderBrush="DarkGray"
-            BorderThickness="1,1,0,0">
+            BorderThickness="1,1,0,0"
+            Visibility="{Binding Items, Converter={StaticResource EmptyItemsToHiddenConverter}}">
             <ItemsControl ItemsSource="{Binding Items}">
                 <ItemsControl.Template>
                     <ControlTemplate TargetType="{x:Type ItemsControl}">

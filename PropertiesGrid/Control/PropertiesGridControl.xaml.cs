@@ -42,22 +42,21 @@ namespace PropertiesGrid.Control
 
         private void ReloadData()
         {
-            if (this.RowProperties.Count > 0 && this.DataSource != null)
-            {
-                this._viewModel.Props = this.RowProperties.Where(p => p.IsVisible == true).ToArray();
-                this._viewModel.Source = this.DataSource ?? new PGSourceStub();
-                this._viewModel.RebaseOnSource(this.RowTemplate, this.PropertyTemplate, this.ColumnTemplate);
+            RowProperty[] visibleProperties = this.RowProperties.Where(p => p.IsVisible == true).ToArray();
 
-                this.itemTemplateSelector.Templates = this.RowProperties.Select(r => r.ItemTemplate).ToArray();
+            this._viewModel.Props = visibleProperties;
+            this._viewModel.Source = (visibleProperties.Length == 0 || this.DataSource == null)?new PGSourceStub():this.DataSource;
+            this._viewModel.RebaseOnSource(this.RowTemplate, this.PropertyTemplate, this.ColumnTemplate);
 
-                this.rowsControl.DataContext = this._viewModel;
-                this.rowsControl.Refresh();
+            this.itemTemplateSelector.Templates = visibleProperties.Select(r => r.ItemTemplate).ToArray();
 
-                this.columnsControl.DataContext = this._viewModel;
-                this.columnsControl.Refresh();
+            this.rowsControl.DataContext = this._viewModel;
+            this.rowsControl.Refresh();
 
-                this._viewModel.SetUpToDate();
-            }
+            this.columnsControl.DataContext = this._viewModel;
+            this.columnsControl.Refresh();
+
+            this._viewModel.SetUpToDate();
         }
 
         #region Dependency Properties

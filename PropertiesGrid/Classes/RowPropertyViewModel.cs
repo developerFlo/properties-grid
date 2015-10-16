@@ -10,15 +10,37 @@ using System.Windows;
 
 namespace PropertiesGrid.Classes
 {
-    public class RowPropertyViewModel:INotifyPropertyChanged
+    public class RowPropertyViewModel : INotifyPropertyChanged, IPGUIElementViewModel
     {
+        int _rowIndex;
+        int _propIndex;
+        bool _isHovered;
         RowProperty _prop;
         DataTemplate _headerTemplate;
 
-        public RowPropertyViewModel(RowProperty prop, DataTemplate headerTemplate)
+        public RowPropertyViewModel(RowProperty prop, DataTemplate headerTemplate, int rowIndex, int propIndex)
         {
             _prop = prop;
             _headerTemplate = headerTemplate;
+            _rowIndex = rowIndex;
+            _propIndex = propIndex;
+            _isHovered = false;
+        }
+
+        public int RowIndex { get { return _rowIndex; } }
+        public int PropIndex { get { return _propIndex; } }
+
+        public bool IsHovered
+        {
+            get { return _isHovered; }
+            set
+            {
+                if (_isHovered != value)
+                {
+                    _isHovered = value;
+                    RaisePropertyChanged("IsHovered");
+                }
+            }
         }
         
         public RowProperty Prop
@@ -45,6 +67,11 @@ namespace PropertiesGrid.Classes
                     RaisePropertyChanged("HeaderTemplate");
                 }
             }
+        }
+
+        public object DataItem
+        {
+            get { return _prop; }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

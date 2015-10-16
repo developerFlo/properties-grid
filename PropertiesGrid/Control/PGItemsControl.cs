@@ -101,12 +101,13 @@ namespace PropertiesGrid.Control
             IItemContainerGenerator generator = this.ItemContainerGenerator;
 
             int columCount = DataSource.Source.Columns.Length;
+            ItemsControl itemsControl = ItemsControl.GetItemsOwner(this);
 
             int lastRow = visibleRange.firstRow + visibleRange.rowCount;
             for (int r = visibleRange.firstRow; r < lastRow; r++)
             {
                 int firstVisibleItemInRow = r * columCount + visibleRange.firstCol;
-                int lastVisibleItemInRow = firstVisibleItemInRow + visibleRange.colCount;
+                int lastVisibleItemInRow = firstVisibleItemInRow + visibleRange.colCount - 1;
                 GeneratorPosition startPos = generator.GeneratorPositionFromIndex(firstVisibleItemInRow);
 
                 // Get index where we'd insert the child for this position. If the item is realized
@@ -118,32 +119,36 @@ namespace PropertiesGrid.Control
                 {
                     for (int itemIndex = firstVisibleItemInRow; itemIndex <= lastVisibleItemInRow; ++itemIndex, ++childIndex)
                     {
-                        bool newlyRealized;
-
-                        // Get or create the child
-                        UIElement child = generator.GenerateNext(out newlyRealized) as UIElement;
-                        if (newlyRealized)
+                        if (((ItemViewModel)itemsControl.Items[itemIndex]).Item != null)
                         {
-                            // Figure out if we need to insert the child at the end or somewhere in the middle
-                            if (childIndex >= children.Count)
+                            bool newlyRealized;
+
+                            // Get or create the child
+                            UIElement child = generator.GenerateNext(out newlyRealized) as UIElement;
+                            if (newlyRealized)
                             {
-                                base.AddInternalChild(child);
+                                // Figure out if we need to insert the child at the end or somewhere in the middle
+                                if (childIndex >= children.Count)
+                                {
+                                    base.AddInternalChild(child);
+                                }
+                                else
+                                {
+                                    base.InsertInternalChild(childIndex, child);
+                                }
+                                generator.PrepareItemContainer(child);
+                                this.DataSource.HoverManager.RegisterItem(child);
                             }
                             else
                             {
-                                base.InsertInternalChild(childIndex, child);
+                                // The child has already been created, let's be sure it's in the right spot
+                                //Debug.Assert(child == children[childIndex], "Wrong child was generated");
                             }
-                            generator.PrepareItemContainer(child);
-                        }
-                        else
-                        {
-                            // The child has already been created, let's be sure it's in the right spot
-                            //Debug.Assert(child == children[childIndex], "Wrong child was generated");
-                        }
 
-                        // Measurements will depend on layout algorithm
-                        if(child != null)
-                            child.Measure(GetChildSize());
+                            // Measurements will depend on layout algorithm
+                            if (child != null)
+                                child.Measure(GetChildSize());
+                        }
                     }
                 }
             }
@@ -423,6 +428,11 @@ namespace PropertiesGrid.Control
 
         public void SetHorizontalOffset(double offset)
         {
+            SetHorizontalOffsetInternal(offset, false);
+        }
+
+        private void SetHorizontalOffsetInternal(double offset, bool fromMeasure)
+        {
             if (offset < 0 || _viewport.Width >= _extent.Width)
             {
                 offset = 0;
@@ -442,11 +452,19 @@ namespace PropertiesGrid.Control
 
             _trans.X = -offset;
 
-            // Force us to realize the correct children
-            InvalidateMeasure();
+            if (!fromMeasure)
+            {
+                // Force us to realize the correct children
+                InvalidateMeasure();
+            }
         }
 
         public void SetVerticalOffset(double offset)
+        {
+            SetVerticalOffsetInternal(offset, false);
+        }
+
+        public void SetVerticalOffsetInternal(double offset, bool fromMeasure)
         {
             if (offset < 0 || _viewport.Height >= _extent.Height)
             {
@@ -467,8 +485,11 @@ namespace PropertiesGrid.Control
 
             _trans.Y = -offset;
 
-            // Force us to realize the correct children
-            InvalidateMeasure();
+            if (!fromMeasure)
+            {
+                // Force us to realize the correct children
+                InvalidateMeasure();
+            }
         }
 
         private void UpdateScrollInfo(Size availableSize)
@@ -490,8 +511,11 @@ namespace PropertiesGrid.Control
             if (availableSize != _viewport)
             {
                 _viewport = availableSize;
-                if (_owner != null)
-                    _owner.InvalidateScrollInfo();
+
+                SetHorizontalOffsetInternal(_offset.X, true);
+                SetVerticalOffsetInternal(_offset.Y, true);
+                //if (_owner != null)
+                //    _owner.InvalidateScrollInfo();
             }
         }
 

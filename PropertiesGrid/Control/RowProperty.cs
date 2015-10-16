@@ -16,9 +16,9 @@ namespace PropertiesGrid.Control
             DependencyProperty.Register(
             "ItemTemplate", typeof(DataTemplate), typeof(RowProperty));
 
-        public static readonly DependencyProperty NameProperty =
+        public static readonly DependencyProperty TitleProperty =
             DependencyProperty.Register(
-            "Name", typeof(string), typeof(RowProperty));
+            "Title", typeof(string), typeof(RowProperty));
 
         public static readonly DependencyProperty IsVisibleProperty =
             DependencyProperty.Register(
@@ -31,10 +31,10 @@ namespace PropertiesGrid.Control
             set { this.SetValue(ItemTemplateProperty, value); }
         }
 
-        public string Name
+        public string Title
         {
-            get { return (string)this.GetValue(NameProperty); }
-            set { this.SetValue(NameProperty, value); }
+            get { return (string)this.GetValue(TitleProperty); }
+            set { this.SetValue(TitleProperty, value); }
         }
 
         public bool IsVisible

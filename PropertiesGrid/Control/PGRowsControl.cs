@@ -36,12 +36,14 @@ namespace PropertiesGrid.Control
                     foreach (RowPropertyViewModel prop in row.Properties)
                     {
                         FrameworkElement propElement = prop.HeaderTemplate.LoadContent() as FrameworkElement;
-                        propElement.DataContext = prop.Prop;
+                        propElement.DataContext = prop;
+                        this.ViewModel.HoverManager.RegisterProperty(propElement);
                         this.Children.Add(propElement);
                     }
 
                     FrameworkElement grpElement = row.HeaderTemplate.LoadContent() as FrameworkElement;
-                    grpElement.DataContext = row.Row;
+                    grpElement.DataContext = row;
+                    this.ViewModel.HoverManager.RegisterRow(grpElement);
                     this.Children.Add(grpElement);
                 }
             }
@@ -63,14 +65,14 @@ namespace PropertiesGrid.Control
                     double availableGroupHeight = PropertiesGridControl.RowHeight * rowPropertiesCount;
                     foreach (FrameworkElement e in this.Children.OfType<FrameworkElement>())
                     {
-                        if (e.DataContext is IPGRow)
+                        if (e.DataContext is RowViewModel)
                         {
                             if (!e.IsMeasureValid)
                                 e.Measure(new Size(double.PositiveInfinity, availableGroupHeight));
 
                             groupWidth = Math.Max(groupWidth, e.DesiredSize.Width);
                         }
-                        else if (e.DataContext is RowProperty)
+                        else if (e.DataContext is RowPropertyViewModel)
                         {
                             if (!e.IsMeasureValid)
                                 e.Measure(new Size(double.PositiveInfinity, PropertiesGridControl.RowHeight));
@@ -79,9 +81,9 @@ namespace PropertiesGrid.Control
                         }
                     }
 
-                    _measuredGroupWidth = groupWidth;
-                    _measuredPropWidth = propWidth;
-                    width = groupWidth + propWidth;
+                    _measuredGroupWidth = Math.Ceiling(groupWidth);
+                    _measuredPropWidth = Math.Ceiling(propWidth);
+                    width = _measuredGroupWidth + _measuredPropWidth;
                 }
 
                 int rows = this.ViewModel.Rows.Length;
@@ -108,7 +110,7 @@ namespace PropertiesGrid.Control
                 int rowPropertiesCount = this.ViewModel.Props.Length;
                 foreach (FrameworkElement e in this.Children.OfType<FrameworkElement>())
                 {
-                    if (e.DataContext is IPGRow)
+                    if (e.DataContext is RowViewModel)
                     {
                         e.Arrange(new Rect(
                             x: 0,
@@ -119,7 +121,7 @@ namespace PropertiesGrid.Control
                         rowIndex++;
                         rowPropIndex = 0;
                     }
-                    else if (e.DataContext is RowProperty)
+                    else if (e.DataContext is RowPropertyViewModel)
                     {
                         e.Arrange(new Rect(
                             x: _measuredGroupWidth,

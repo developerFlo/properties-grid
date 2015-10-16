@@ -8,5 +8,7 @@ namespace PropertiesGrid.Interfaces
 {
     public interface IPGItem
     {
+        IPGItem DeepCopy();
+        void ResetValues(IPGItem item);
     }
 }

@@ -18,12 +18,14 @@ namespace PropertiesGrid.Classes
         RowViewModel[] _rows;
         ColumnViewModel[] _columns;
         RowProperty[] _props;
+        HoverManager _hoverManager;
 
         public event EventHandler OnSourceUpdated;
 
         public PropertiesGridControlViewModel()
         {
             _source = new PGSourceStub();
+            _hoverManager = new HoverManager(this);
             _items = new ItemViewModel[0];
             _rows = new RowViewModel[0];
             _columns = new ColumnViewModel[0];
@@ -74,6 +76,11 @@ namespace PropertiesGrid.Classes
             }
         }
 
+        public HoverManager HoverManager
+        {
+            get { return _hoverManager; }
+        }
+
         public RowProperty[] Props
         {
             get
@@ -119,29 +126,30 @@ namespace PropertiesGrid.Classes
             int itemIndex = 0;
             for (int r = 0; r < rowCount; r++)
             {
-                RowViewModel row = new RowViewModel();
-                row.Row = this.Source.Rows[r];
+                RowViewModel row = new RowViewModel(this.Source.Rows[r],rowTemplate,r);
                 row.Properties = new RowPropertyViewModel[propCount];
-                row.HeaderTemplate = rowTemplate;
+
                 for (int p = 0; p < propCount; p++)
                 {
-                    RowPropertyViewModel prop = new RowPropertyViewModel(this.Props[p], propertyTemplate);
+                    RowPropertyViewModel prop = new RowPropertyViewModel(this.Props[p], propertyTemplate,r,p);
                     row.Properties[p] = prop;
                     for (int c = 0; c < colCount; c++)
                     {
-                        items[itemIndex++] = new ItemViewModel(c, r, p, this.Source.Rows[r].Items[c], this.Source.Columns[c]);
+                        items[itemIndex] = new ItemViewModel(c, r, p, itemIndex, this.Source.Rows[r].Items[c], this.Source.Columns[c],this);
+                        itemIndex++;
                     }
                 }
                 rows[r] = row;
             }
             for (int c = 0; c < colCount; c++)
             {
-                columns[c] = new ColumnViewModel(this.Source.Columns[c], columnTemplate);
+                columns[c] = new ColumnViewModel(this.Source.Columns[c], columnTemplate, c);
             }
 
             this.Rows = rows;
             this.Columns = columns;
             this.Items = items;
+            this._hoverManager.Reset();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

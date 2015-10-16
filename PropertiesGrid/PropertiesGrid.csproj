@@ -50,6 +50,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\ColumnViewModel.cs" />
+    <Compile Include="Classes\Converts.cs" />
+    <Compile Include="Classes\HoverManager.cs" />
     <Compile Include="Classes\PGItemTemplateSelector.cs" />
     <Compile Include="Classes\PGSourceStub.cs" />
     <Compile Include="Classes\PropertiesGridControlViewModel.cs" />
@@ -66,9 +68,9 @@
     <Compile Include="Interfaces\IPGColumn.cs" />
     <Compile Include="Interfaces\IPGRow.cs" />
     <Compile Include="Interfaces\IPGItem.cs" />
-    <Compile Include="Interfaces\IPGRowPropertyDef.cs" />
     <Compile Include="Interfaces\IPGSource.cs" />
     <Compile Include="Classes\RowPropertyViewModel.cs" />
+    <Compile Include="Interfaces\IPGUIElementViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

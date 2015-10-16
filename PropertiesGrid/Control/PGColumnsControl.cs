@@ -31,7 +31,8 @@ namespace PropertiesGrid.Control
                 foreach (ColumnViewModel col in columns)
                 {
                     FrameworkElement obj = col.HeaderTemplate.LoadContent() as FrameworkElement;
-                    obj.DataContext = col.Column;
+                    obj.DataContext = col;
+                    this.ViewModel.HoverManager.RegisterColumn(obj);
                     this.Children.Add(obj);
                 }
             }

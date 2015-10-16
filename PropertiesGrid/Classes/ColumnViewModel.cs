@@ -9,16 +9,22 @@ using System.Windows;
 
 namespace PropertiesGrid.Classes
 {
-    class ColumnViewModel : INotifyPropertyChanged
+    public class ColumnViewModel : INotifyPropertyChanged, IPGUIElementViewModel
     {
+        int _columnIndex;
+        bool _isHovered;
         IPGColumn _column;
         DataTemplate _headerTemplate;
 
-        public ColumnViewModel(IPGColumn column, DataTemplate headerTemplate)
+        public ColumnViewModel(IPGColumn column, DataTemplate headerTemplate, int columnIndex)
         {
+            _columnIndex = columnIndex;
             _column = column;
             _headerTemplate = headerTemplate;
+            _isHovered = false;
         }
+
+        public int ColumnIndex { get { return _columnIndex; } }
 
         public IPGColumn Column
         {
@@ -29,6 +35,19 @@ namespace PropertiesGrid.Classes
                 {
                     _column = value;
                     RaisePropertyChanged("Column");
+                }
+            }
+        }
+
+        public bool IsHovered
+        {
+            get { return _isHovered; }
+            set
+            {
+                if (_isHovered != value)
+                {
+                    _isHovered = value;
+                    RaisePropertyChanged("IsHovered");
                 }
             }
         }
@@ -44,6 +63,11 @@ namespace PropertiesGrid.Classes
                     RaisePropertyChanged("HeaderTemplate");
                 }
             }
+        }
+
+        public object DataItem
+        {
+            get { return _column; }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
