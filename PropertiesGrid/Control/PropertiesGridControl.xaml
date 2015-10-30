@@ -8,9 +8,15 @@
              mc:Ignorable="d" Loaded="UserControl_Loaded"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
+        <c:PropertiesGridControlViewModel x:Key="vm" />
         <c:EmptyItemsToHiddenConverter x:Key="EmptyItemsToHiddenConverter" />
+        <CollectionViewSource x:Key="groupedItemsSource" Source="{Binding Path=Items, Source={StaticResource vm}}">
+            <!--<CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="RowIndex" />
+            </CollectionViewSource.GroupDescriptions>-->
+        </CollectionViewSource>
     </UserControl.Resources>
-    <Grid x:Name="mainGrid">
+    <Grid x:Name="mainGrid" DataContext="{StaticResource vm}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -41,20 +47,33 @@
             BorderBrush="DarkGray"
             BorderThickness="1,1,0,0"
             Visibility="{Binding Items, Converter={StaticResource EmptyItemsToHiddenConverter}}">
-            <ItemsControl ItemsSource="{Binding Items}">
+            <ItemsControl ItemsSource="{Binding Source={StaticResource groupedItemsSource}}">
                 <ItemsControl.Template>
                     <ControlTemplate TargetType="{x:Type ItemsControl}">
-                        <ScrollViewer CanContentScroll="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" ScrollChanged="ScrollViewer_ScrollChanged">
+                        <ScrollViewer CanContentScroll="True" 
+                                      VerticalScrollBarVisibility="Auto" 
+                                      HorizontalScrollBarVisibility="Auto" 
+                                      ScrollChanged="ScrollViewer_ScrollChanged"
+                                      VirtualizingPanel.IsVirtualizingWhenGrouping="True">
                             <ItemsPresenter />
                         </ScrollViewer>
                     </ControlTemplate>
                 </ItemsControl.Template>
+                <ItemsControl.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Neue Gruppe" />
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ItemsControl.GroupStyle>
                 <ItemsControl.ItemTemplateSelector>
                     <c:PGItemTemplateSelector x:Name="itemTemplateSelector" />
                 </ItemsControl.ItemTemplateSelector>
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <local:PGItemsControl DataSource="{Binding}" />
+                        <local:PGItemsControl DataSource="{StaticResource vm}" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
             </ItemsControl>

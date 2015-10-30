@@ -31,8 +31,8 @@ namespace PropertiesGrid.Control
         public PropertiesGridControl()
         {
             this.InitializeComponent();
-            this._viewModel = new PropertiesGridControlViewModel();
-            this.mainGrid.DataContext = this._viewModel;
+
+            this._viewModel = this.Resources["vm"] as PropertiesGridControlViewModel;
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)

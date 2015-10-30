@@ -17,6 +17,7 @@ namespace PropertiesGrid.Control
     {
         const int SCROLL_CREATE_ITEMS_DELAY_MS = 50;
         const int CREATE_MARGIN_ELEMENTS = 2;
+        const int SCROLL_VELOCITY = 20;
 
         VisibleRange _prevVisibleRange = VisibleRange.Empty;
         VisibleRange _calculatedVisibleRange = VisibleRange.Empty;
@@ -24,7 +25,25 @@ namespace PropertiesGrid.Control
         public PGItemsControl()
         {
             this.RenderTransform = _trans;
+
+            this.Loaded += PGItemsControl_Loaded;
         }
+
+        void PGItemsControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            ItemsControl itemsControl = ItemsControl.GetItemsOwner(this);
+            itemsControl.ItemContainerGenerator.StatusChanged += (s, args) =>
+            {
+                if (itemsControl.ItemContainerGenerator.Status ==
+                                   GeneratorStatus.ContainersGenerated)
+                {
+                    var x = args;
+                    // Your code goes here.         
+                }
+            };
+        }
+
+        
 
         #region Dependency Properties
         public static readonly DependencyProperty DataSourceProperty =
@@ -90,7 +109,11 @@ namespace PropertiesGrid.Control
                     }
                 }, TaskScheduler.FromCurrentSynchronizationContext());
             }
-            
+
+            //if (double.IsPositiveInfinity(availableSize.Height)) availableSize.Height = this.DataSource.Rows.Length * this.DataSource.Props.Length * PropertiesGridControl.RowHeight;
+            //if (double.IsPositiveInfinity(availableSize.Width)) availableSize.Width = this.DataSource.Columns.Length * PropertiesGridControl.DataItemWidth;
+
+
             return availableSize;
         }
 
@@ -351,42 +374,42 @@ namespace PropertiesGrid.Control
 
         public void LineDown()
         {
-            SetVerticalOffset(this.VerticalOffset + 10);
+            SetVerticalOffset(this.VerticalOffset + SCROLL_VELOCITY);
         }
 
         public void LineLeft()
         {
-            SetHorizontalOffset(this.HorizontalOffset + 10);
+            SetHorizontalOffset(this.HorizontalOffset + SCROLL_VELOCITY);
         }
 
         public void LineRight()
         {
-            SetHorizontalOffset(this.HorizontalOffset - 10);
+            SetHorizontalOffset(this.HorizontalOffset - SCROLL_VELOCITY);
         }
 
         public void LineUp()
         {
-            SetVerticalOffset(this.VerticalOffset - 10);
+            SetVerticalOffset(this.VerticalOffset - SCROLL_VELOCITY);
         }
 
         public void MouseWheelDown()
         {
-            SetVerticalOffset(this.VerticalOffset + 10);
+            SetVerticalOffset(this.VerticalOffset + SCROLL_VELOCITY);
         }
 
         public void MouseWheelLeft()
         {
-            SetHorizontalOffset(this.HorizontalOffset + 10);
+            SetHorizontalOffset(this.HorizontalOffset + SCROLL_VELOCITY);
         }
 
         public void MouseWheelRight()
         {
-            SetHorizontalOffset(this.HorizontalOffset - 10);
+            SetHorizontalOffset(this.HorizontalOffset - SCROLL_VELOCITY);
         }
 
         public void MouseWheelUp()
         {
-            SetVerticalOffset(this.VerticalOffset - 10);
+            SetVerticalOffset(this.VerticalOffset - SCROLL_VELOCITY);
         }
 
         public void PageDown()
