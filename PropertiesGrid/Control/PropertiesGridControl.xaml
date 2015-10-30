@@ -10,11 +10,6 @@
     <UserControl.Resources>
         <c:PropertiesGridControlViewModel x:Key="vm" />
         <c:EmptyItemsToHiddenConverter x:Key="EmptyItemsToHiddenConverter" />
-        <CollectionViewSource x:Key="groupedItemsSource" Source="{Binding Path=Items, Source={StaticResource vm}}">
-            <!--<CollectionViewSource.GroupDescriptions>
-                <PropertyGroupDescription PropertyName="RowIndex" />
-            </CollectionViewSource.GroupDescriptions>-->
-        </CollectionViewSource>
     </UserControl.Resources>
     <Grid x:Name="mainGrid" DataContext="{StaticResource vm}">
         <Grid.RowDefinitions>
@@ -47,7 +42,7 @@
             BorderBrush="DarkGray"
             BorderThickness="1,1,0,0"
             Visibility="{Binding Items, Converter={StaticResource EmptyItemsToHiddenConverter}}">
-            <ItemsControl ItemsSource="{Binding Source={StaticResource groupedItemsSource}}">
+            <ItemsControl ItemsSource="{Binding Items}">
                 <ItemsControl.Template>
                     <ControlTemplate TargetType="{x:Type ItemsControl}">
                         <ScrollViewer CanContentScroll="True" 

@@ -34,5 +34,15 @@ namespace PropertiesGridSample.Models
                 return _dayInfos;
             }
         }
+
+        public string Name
+        {
+            get { return this.ToString(); }
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0} {1}", _firstName, _lastName);
+        }
     }
 }

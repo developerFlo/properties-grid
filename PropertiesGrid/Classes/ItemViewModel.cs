@@ -114,6 +114,11 @@ namespace PropertiesGrid.Classes
             StopEdit();
         }
 
+        public override string ToString()
+        {
+            return string.Format("{0}|{1}|{2}", _rowIndex, _propIndex, _colIndex);
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void RaisePropertyChanged(string propertyName)

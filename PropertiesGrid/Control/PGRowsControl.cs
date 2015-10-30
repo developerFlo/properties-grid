@@ -77,7 +77,7 @@ namespace PropertiesGrid.Control
                             if (!e.IsMeasureValid)
                                 e.Measure(new Size(double.PositiveInfinity, PropertiesGridControl.RowHeight));
 
-                            propWidth = Math.Max(groupWidth, e.DesiredSize.Width);
+                            propWidth = Math.Max(propWidth, e.DesiredSize.Width);
                         }
                     }
 

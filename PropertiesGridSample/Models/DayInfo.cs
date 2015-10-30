@@ -93,5 +93,31 @@ namespace PropertiesGridSample.Models
                 _gamingHours = value;
             }
         }
+
+        public IPGItem DeepCopy()
+        {
+            DayInfo di = new DayInfo();
+            di._breakTime = this._breakTime;
+            di._gamingHours = this._gamingHours;
+            di._onHoliday = this._onHoliday;
+            di._sik = this._sik;
+            di._stayAt = this._stayAt;
+            di._workHours = this._workHours;
+            return di;
+        }
+
+        public void ResetValues(IPGItem item)
+        {
+            DayInfo di = item as DayInfo;
+            if(item != null)
+            {
+                this.BreakTime = di._breakTime;
+                this.GamingHours = di._gamingHours;
+                this.OnHoliday = di._onHoliday;
+                this.Sik = di._sik;
+                this.StayAt = di._stayAt;
+                this.WorkHours = di._workHours;
+            }
+        }
     }
 }

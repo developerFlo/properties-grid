@@ -7,57 +7,78 @@
         xmlns:pg="clr-namespace:PropertiesGrid.Control;assembly=PropertiesGrid"
         xmlns:vm="clr-namespace:PropertiesGridSample.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="800">
+        Title="MainWindow" Height="500" Width="800" WindowState="Maximized">
     <Window.Resources>
         <vm:MainWindowViewModel x:Key="ViewModel" />
+        <Style x:Key="ItemTextBlockStyle" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
     </Window.Resources>
     <Grid DataContext="{StaticResource ViewModel}">
         <pg:PropertiesGridControl DataSource="{Binding PersonData}">
             <pg:PropertiesGridControl.RowProperties>
-                <pg:RowProperty Name="Work hours">
+                <pg:RowProperty Title="Work hours">
                     <DataTemplate>
-                        <TextBlock Text="{Binding Item.WorkHours}" />
+                        <TextBlock Text="{Binding Item.WorkHours, StringFormat={}{0:0.##}}"
+                                   Style="{StaticResource ItemTextBlockStyle}" />
                     </DataTemplate>
                 </pg:RowProperty>
-                <pg:RowProperty Name="Break time">
+                <pg:RowProperty Title="Break time">
                     <DataTemplate>
-                        <TextBlock Text="{Binding Item.BreakTime}" />
+                        <TextBlock Text="{Binding Item.BreakTime, StringFormat={}{0:0.##}}"
+                                   Style="{StaticResource ItemTextBlockStyle}" />
                     </DataTemplate>
                 </pg:RowProperty>
-                <pg:RowProperty Name="On Holiday">
+                <pg:RowProperty Title="On Holiday">
                     <DataTemplate>
-                        <TextBlock Text="{Binding Item.OnHoliday}" />
+                        <TextBlock Text="{Binding Item.OnHoliday}"
+                                   Style="{StaticResource ItemTextBlockStyle}" />
                     </DataTemplate>
                 </pg:RowProperty>
-                <pg:RowProperty Name="Sik">
+                <pg:RowProperty Title="Sik">
                     <DataTemplate>
                         <TextBox Text="{Binding Item.Sik}" />
                     </DataTemplate>
                 </pg:RowProperty>
-                <pg:RowProperty Name="Gaming hours">
+                <pg:RowProperty Title="Gaming hours">
                     <DataTemplate>
-                        <TextBlock Text="{Binding Item.GamingHours}" />
+                        <TextBlock Text="{Binding Item.GamingHours, StringFormat={}{0:0.##}}" 
+                                   Style="{StaticResource ItemTextBlockStyle}" />
                     </DataTemplate>
                 </pg:RowProperty>
-                <pg:RowProperty Name="Stay at">
+                <pg:RowProperty Title="Stay at">
                     <DataTemplate>
-                        <TextBlock Text="{Binding Item.StayAt}" />
+                        <TextBlock Text="{Binding Item.StayAt}"
+                                   Style="{StaticResource ItemTextBlockStyle}" />
                     </DataTemplate>
                 </pg:RowProperty>
             </pg:PropertiesGridControl.RowProperties>
             <pg:PropertiesGridControl.ColumnTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}" />
+                    <Border Width="100" Height="90">
+                        <TextBlock Text="{Binding Column.Name}" RenderTransformOrigin="0,0"
+                                   VerticalAlignment="Bottom">
+                            <TextBlock.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform/>
+                                    <RotateTransform Angle="-90"/>
+                                    <TranslateTransform X="13" Y="5" />
+                                </TransformGroup>
+                            </TextBlock.RenderTransform>
+                        </TextBlock>
+                    </Border>
                 </DataTemplate>
             </pg:PropertiesGridControl.ColumnTemplate>
             <pg:PropertiesGridControl.RowTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}" />
+                    <TextBlock Text="{Binding Row.Name}" Margin="5,2" VerticalAlignment="Top" />
                 </DataTemplate>
             </pg:PropertiesGridControl.RowTemplate>
             <pg:PropertiesGridControl.PropertyTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}" />
+                    <TextBlock Text="{Binding Prop.Title}" Margin="5,2"  />
                 </DataTemplate>
             </pg:PropertiesGridControl.PropertyTemplate>
         </pg:PropertiesGridControl>

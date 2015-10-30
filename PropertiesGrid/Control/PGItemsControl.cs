@@ -15,7 +15,7 @@ namespace PropertiesGrid.Control
 {
     class PGItemsControl:VirtualizingPanel,IScrollInfo
     {
-        const int SCROLL_CREATE_ITEMS_DELAY_MS = 50;
+        const int SCROLL_CREATE_ITEMS_DELAY_MS = 0;
         const int CREATE_MARGIN_ELEMENTS = 2;
         const int SCROLL_VELOCITY = 20;
 
@@ -109,10 +109,6 @@ namespace PropertiesGrid.Control
                     }
                 }, TaskScheduler.FromCurrentSynchronizationContext());
             }
-
-            //if (double.IsPositiveInfinity(availableSize.Height)) availableSize.Height = this.DataSource.Rows.Length * this.DataSource.Props.Length * PropertiesGridControl.RowHeight;
-            //if (double.IsPositiveInfinity(availableSize.Width)) availableSize.Width = this.DataSource.Columns.Length * PropertiesGridControl.DataItemWidth;
-
 
             return availableSize;
         }
@@ -374,42 +370,42 @@ namespace PropertiesGrid.Control
 
         public void LineDown()
         {
-            SetVerticalOffset(this.VerticalOffset + SCROLL_VELOCITY);
+            SetVerticalOffset(this.VerticalOffset + 1.0);
         }
 
         public void LineLeft()
         {
-            SetHorizontalOffset(this.HorizontalOffset + SCROLL_VELOCITY);
+            SetHorizontalOffset(this.HorizontalOffset + 1.0);
         }
 
         public void LineRight()
         {
-            SetHorizontalOffset(this.HorizontalOffset - SCROLL_VELOCITY);
+            SetHorizontalOffset(this.HorizontalOffset - 1.0);
         }
 
         public void LineUp()
         {
-            SetVerticalOffset(this.VerticalOffset - SCROLL_VELOCITY);
+            SetVerticalOffset(this.VerticalOffset - 1.0);
         }
 
         public void MouseWheelDown()
         {
-            SetVerticalOffset(this.VerticalOffset + SCROLL_VELOCITY);
+            SetVerticalOffset(this.VerticalOffset + SystemParameters.WheelScrollLines * SCROLL_VELOCITY);
         }
 
         public void MouseWheelLeft()
         {
-            SetHorizontalOffset(this.HorizontalOffset + SCROLL_VELOCITY);
+            SetHorizontalOffset(this.HorizontalOffset + 3.0 * SCROLL_VELOCITY);
         }
 
         public void MouseWheelRight()
         {
-            SetHorizontalOffset(this.HorizontalOffset - SCROLL_VELOCITY);
+            SetHorizontalOffset(this.HorizontalOffset - 3.0 * SCROLL_VELOCITY);
         }
 
         public void MouseWheelUp()
         {
-            SetVerticalOffset(this.VerticalOffset - SCROLL_VELOCITY);
+            SetVerticalOffset(this.VerticalOffset - SystemParameters.WheelScrollLines * SCROLL_VELOCITY);
         }
 
         public void PageDown()
@@ -501,17 +497,20 @@ namespace PropertiesGrid.Control
                 }
             }
 
-            _offset.Y = offset;
-
-            if (_owner != null)
-                _owner.InvalidateScrollInfo();
-
-            _trans.Y = -offset;
-
-            if (!fromMeasure)
+            if (Math.Abs(_offset.Y - offset) > 0.1)
             {
-                // Force us to realize the correct children
-                InvalidateMeasure();
+                _offset.Y = offset;
+
+                if (_owner != null)
+                    _owner.InvalidateScrollInfo();
+
+                _trans.Y = -offset;
+
+                if (!fromMeasure)
+                {
+                    // Force us to realize the correct children
+                    InvalidateMeasure();
+                }
             }
         }
 
