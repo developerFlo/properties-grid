@@ -15,7 +15,7 @@ namespace PropertiesGrid.Control
 {
     class PGItemsControl:VirtualizingPanel,IScrollInfo
     {
-        const int SCROLL_CREATE_ITEMS_DELAY_MS = 0;
+        const int SCROLL_CREATE_ITEMS_DELAY_MS = 50;
         const int CREATE_MARGIN_ELEMENTS = 2;
         const int SCROLL_VELOCITY = 20;
 
@@ -464,17 +464,20 @@ namespace PropertiesGrid.Control
                 }
             }
 
-            _offset.X = offset;
-
-            if (_owner != null)
-                _owner.InvalidateScrollInfo();
-
-            _trans.X = -offset;
-
-            if (!fromMeasure)
+            if (Math.Abs(_offset.X - offset) > 0.1)
             {
-                // Force us to realize the correct children
-                InvalidateMeasure();
+                _offset.X = offset;
+
+                if (_owner != null)
+                    _owner.InvalidateScrollInfo();
+
+                _trans.X = -offset;
+
+                if (!fromMeasure)
+                {
+                    // Force us to realize the correct children
+                    InvalidateMeasure();
+                }
             }
         }
 

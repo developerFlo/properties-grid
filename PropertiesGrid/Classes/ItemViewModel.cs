@@ -1,10 +1,12 @@
-﻿using PropertiesGrid.Interfaces;
+﻿using PropertiesGrid.Control;
+using PropertiesGrid.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace PropertiesGrid.Classes
 {
@@ -20,8 +22,10 @@ namespace PropertiesGrid.Classes
         IPGItem _resetItem;
         IPGColumn _column;
         PropertiesGridControlViewModel _vm;
+        RowProperty _property;
 
-        internal ItemViewModel(int colIndex, int rowIndex, int propIndex, int itemIndex, IPGItem item, IPGColumn column, PropertiesGridControlViewModel vm)
+        internal ItemViewModel(int colIndex, int rowIndex, int propIndex, int itemIndex, 
+            IPGItem item, IPGColumn column, RowProperty property, PropertiesGridControlViewModel vm)
         {
             this._colIndex = colIndex;
             this._rowIndex = rowIndex;
@@ -32,6 +36,7 @@ namespace PropertiesGrid.Classes
             this._inEditMode = false;
             this._isHovered = false;
             this._vm = vm;
+            this._property = property;
         }
 
         #region Properties
@@ -64,6 +69,8 @@ namespace PropertiesGrid.Classes
                 {
                     _inEditMode = value;
                     RaisePropertyChanged("InEditMode");
+
+                    
                 }
             }
         }
@@ -84,6 +91,12 @@ namespace PropertiesGrid.Classes
         public object DataItem
         {
             get { return _item; }
+        }
+        
+        internal RowProperty Property
+        {
+            get { return _property; }
+            set { _property = value; }
         }
 
         #endregion

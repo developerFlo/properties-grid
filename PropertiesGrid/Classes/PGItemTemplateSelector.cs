@@ -11,19 +11,47 @@ namespace PropertiesGrid.Classes
 {
     class PGItemTemplateSelector: DataTemplateSelector
     {
-        public DataTemplate[] Templates { get; internal set; }
+        bool _onlyReturnItemTemplate;
 
+        public PGItemTemplateSelector()
+        {
+            _onlyReturnItemTemplate = false;
+        }
+
+        public PGItemTemplateSelector(bool onlyReturnItemTemplate)
+        {
+            _onlyReturnItemTemplate = onlyReturnItemTemplate;
+        }
+        
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
+            //Diese Methode wird 2 mal aufgerufen
+            // 1.) Vom PGItemsControl: Hier soll falls definiert das ItemContainerTemplate verwendet werden
+            // 2.) Vom ContentPresenter im ItemContainerTemplate: Hier soll das ItemTemplate (und später das EditTemplate) verwendet werden
+
+            // Zu sehen ist dieser Unterschied im Parameter container.VisualParent auf den leider nur via Debugger zugegriffen werden kann
+
+
             ItemViewModel ivm = (ItemViewModel)item;
-            if (Templates != null && Templates.Length > ivm.PropIndex)
+            DataTemplate template = null;
+
+            //Standardmäßig falls vorhanden -> ItemContainerTemplate
+            if (!_onlyReturnItemTemplate && ivm.Property.ItemContainerTemplate != null)
             {
-                return Templates[ivm.PropIndex];
+                template = ivm.Property.ItemContainerTemplate;
             }
-            else
+            //Falls keine ItemContainerTemplate vorhanden -> ItemTemplate
+            if (template == null && ivm.Property.ItemTemplate != null)
             {
-                return base.SelectTemplate(item, container);
+                template = ivm.Property.ItemTemplate;
             }
+            //Falls kein ItemTemplate vorhanden -> Default Template
+            if (template == null)
+            {
+                template = base.SelectTemplate(item, container);
+            }
+
+            return template;
         }
     }
 }

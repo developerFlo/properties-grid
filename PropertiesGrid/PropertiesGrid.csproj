@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Classes\ColumnViewModel.cs" />
     <Compile Include="Classes\Converters.cs" />
+    <Compile Include="Control\DetailContentPresenter.cs" />
     <Compile Include="Classes\HoverManager.cs" />
     <Compile Include="Classes\PGItemTemplateSelector.cs" />
     <Compile Include="Classes\PGSourceStub.cs" />

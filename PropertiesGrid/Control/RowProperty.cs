@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Markup;
 
 namespace PropertiesGrid.Control
@@ -12,9 +13,17 @@ namespace PropertiesGrid.Control
     public class RowProperty:DependencyObject
     {
         #region Dependency Properties
+        public static readonly DependencyProperty ItemContainerTemplateProperty =
+            DependencyProperty.Register(
+            "ItemContainerTemplate", typeof(DataTemplate), typeof(RowProperty));
+
         public static readonly DependencyProperty ItemTemplateProperty =
             DependencyProperty.Register(
             "ItemTemplate", typeof(DataTemplate), typeof(RowProperty));
+
+        public static readonly DependencyProperty EditTemplateProperty =
+            DependencyProperty.Register(
+            "EditTemplate", typeof(DataTemplate), typeof(RowProperty));
 
         public static readonly DependencyProperty TitleProperty =
             DependencyProperty.Register(
@@ -25,10 +34,22 @@ namespace PropertiesGrid.Control
             "IsVisible", typeof(bool), typeof(RowProperty),
             new PropertyMetadata(true));
 
+        public DataTemplate ItemContainerTemplate
+        {
+            get { return (DataTemplate)this.GetValue(ItemContainerTemplateProperty); }
+            set { this.SetValue(ItemContainerTemplateProperty, value); }
+        }
+
         public DataTemplate ItemTemplate
         {
             get { return (DataTemplate)this.GetValue(ItemTemplateProperty); }
             set { this.SetValue(ItemTemplateProperty, value); }
+        }
+
+        public DataTemplate EditTemplate
+        {
+            get { return (DataTemplate)this.GetValue(EditTemplateProperty); }
+            set { this.SetValue(EditTemplateProperty, value); }
         }
 
         public string Title

@@ -13,6 +13,12 @@
         <Style x:Key="ItemTextBlockStyle" TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Visibility" Value="{Binding InEditMode, Converter={StaticResource InvertBooleanToVisibilityConverter}}" />
+            <EventSetter Event="MouseLeftButtonUp" Handler="ItemTextBlock_MouseLeftButtonUp" />
+        </Style>
+        <Style x:Key="ItemComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Visibility" Value="{Binding InEditMode, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <EventSetter Event="LostFocus" Handler="ItemComboBox_LostFocus" />
         </Style>
     </Window.Resources>
     <Grid DataContext="{StaticResource ViewModel}">
@@ -23,35 +29,132 @@
                         <TextBlock Text="{Binding Item.WorkHours, StringFormat={}{0:0.##}}"
                                    Style="{StaticResource ItemTextBlockStyle}" />
                     </DataTemplate>
+                    <pg:RowProperty.EditTemplate>
+                        <DataTemplate>
+                            <ComboBox Style="{StaticResource ItemComboBoxStyle}">
+                                <ComboBoxItem>Ich</ComboBoxItem>
+                                <ComboBoxItem>Du</ComboBoxItem>
+                                <ComboBoxItem>Er</ComboBoxItem>
+                            </ComboBox>
+                        </DataTemplate>
+                    </pg:RowProperty.EditTemplate>
+                    <pg:RowProperty.ItemContainerTemplate>
+                        <DataTemplate>
+                            <Border>
+                                <pg:DetailContentPresenter />
+                            </Border>
+                        </DataTemplate>
+                    </pg:RowProperty.ItemContainerTemplate>
                 </pg:RowProperty>
                 <pg:RowProperty Title="Break time">
                     <DataTemplate>
                         <TextBlock Text="{Binding Item.BreakTime, StringFormat={}{0:0.##}}"
                                    Style="{StaticResource ItemTextBlockStyle}" />
                     </DataTemplate>
+                    <pg:RowProperty.EditTemplate>
+                        <DataTemplate>
+                            <ComboBox Style="{StaticResource ItemComboBoxStyle}">
+                                <ComboBoxItem>Ich</ComboBoxItem>
+                                <ComboBoxItem>Du</ComboBoxItem>
+                                <ComboBoxItem>Er</ComboBoxItem>
+                            </ComboBox>
+                        </DataTemplate>
+                    </pg:RowProperty.EditTemplate>
+                    <pg:RowProperty.ItemContainerTemplate>
+                        <DataTemplate>
+                            <Border>
+                                <pg:DetailContentPresenter />
+                            </Border>
+                        </DataTemplate>
+                    </pg:RowProperty.ItemContainerTemplate>
                 </pg:RowProperty>
                 <pg:RowProperty Title="On Holiday">
                     <DataTemplate>
                         <TextBlock Text="{Binding Item.OnHoliday}"
                                    Style="{StaticResource ItemTextBlockStyle}" />
                     </DataTemplate>
+                    <pg:RowProperty.EditTemplate>
+                        <DataTemplate>
+                            <ComboBox Style="{StaticResource ItemComboBoxStyle}">
+                                <ComboBoxItem>Ich</ComboBoxItem>
+                                <ComboBoxItem>Du</ComboBoxItem>
+                                <ComboBoxItem>Er</ComboBoxItem>
+                            </ComboBox>
+                        </DataTemplate>
+                    </pg:RowProperty.EditTemplate>
+                    <pg:RowProperty.ItemContainerTemplate>
+                        <DataTemplate>
+                            <Border>
+                                <pg:DetailContentPresenter />
+                            </Border>
+                        </DataTemplate>
+                    </pg:RowProperty.ItemContainerTemplate>
                 </pg:RowProperty>
                 <pg:RowProperty Title="Sik">
                     <DataTemplate>
-                        <TextBox Text="{Binding Item.Sik}" />
+                        <TextBlock Text="{Binding Item.Sik}"
+                                   Style="{StaticResource ItemTextBlockStyle}"/>
                     </DataTemplate>
+                    <pg:RowProperty.EditTemplate>
+                        <DataTemplate>
+                            <ComboBox Style="{StaticResource ItemComboBoxStyle}">
+                                <ComboBoxItem>Ich</ComboBoxItem>
+                                <ComboBoxItem>Du</ComboBoxItem>
+                                <ComboBoxItem>Er</ComboBoxItem>
+                            </ComboBox>
+                        </DataTemplate>
+                    </pg:RowProperty.EditTemplate>
+                    <pg:RowProperty.ItemContainerTemplate>
+                        <DataTemplate>
+                            <Border>
+                                <pg:DetailContentPresenter />
+                            </Border>
+                        </DataTemplate>
+                    </pg:RowProperty.ItemContainerTemplate>
                 </pg:RowProperty>
                 <pg:RowProperty Title="Gaming hours">
                     <DataTemplate>
                         <TextBlock Text="{Binding Item.GamingHours, StringFormat={}{0:0.##}}" 
                                    Style="{StaticResource ItemTextBlockStyle}" />
                     </DataTemplate>
+                    <pg:RowProperty.EditTemplate>
+                        <DataTemplate>
+                            <ComboBox Style="{StaticResource ItemComboBoxStyle}">
+                                <ComboBoxItem>Ich</ComboBoxItem>
+                                <ComboBoxItem>Du</ComboBoxItem>
+                                <ComboBoxItem>Er</ComboBoxItem>
+                            </ComboBox>
+                        </DataTemplate>
+                    </pg:RowProperty.EditTemplate>
+                    <pg:RowProperty.ItemContainerTemplate>
+                        <DataTemplate>
+                            <Border>
+                                <pg:DetailContentPresenter />
+                            </Border>
+                        </DataTemplate>
+                    </pg:RowProperty.ItemContainerTemplate>
                 </pg:RowProperty>
                 <pg:RowProperty Title="Stay at">
                     <DataTemplate>
                         <TextBlock Text="{Binding Item.StayAt}"
                                    Style="{StaticResource ItemTextBlockStyle}" />
                     </DataTemplate>
+                    <pg:RowProperty.EditTemplate>
+                        <DataTemplate>
+                            <ComboBox Style="{StaticResource ItemComboBoxStyle}">
+                                <ComboBoxItem>Ich</ComboBoxItem>
+                                <ComboBoxItem>Du</ComboBoxItem>
+                                <ComboBoxItem>Er</ComboBoxItem>
+                            </ComboBox>
+                        </DataTemplate>
+                    </pg:RowProperty.EditTemplate>
+                    <pg:RowProperty.ItemContainerTemplate>
+                        <DataTemplate>
+                            <Border>
+                                <pg:DetailContentPresenter />
+                            </Border>
+                        </DataTemplate>
+                    </pg:RowProperty.ItemContainerTemplate>
                 </pg:RowProperty>
             </pg:PropertiesGridControl.RowProperties>
             <pg:PropertiesGridControl.ColumnTemplate>
@@ -68,17 +171,48 @@
                                 </TransformGroup>
                             </TextBlock.RenderTransform>
                         </TextBlock>
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsHovered}" Value="True">
+                                        <Setter Property="Background" Value="Yellow" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
                     </Border>
                 </DataTemplate>
             </pg:PropertiesGridControl.ColumnTemplate>
             <pg:PropertiesGridControl.RowTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Row.Name}" Margin="5,2" VerticalAlignment="Top" />
+                    <Border>
+                        <TextBlock Text="{Binding Row.Name}" Margin="5,2" VerticalAlignment="Top" />
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsHovered}" Value="True">
+                                        <Setter Property="Background" Value="Yellow" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                    </Border>
                 </DataTemplate>
             </pg:PropertiesGridControl.RowTemplate>
             <pg:PropertiesGridControl.PropertyTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Prop.Title}" Margin="5,2"  />
+                    <Border>
+                        <TextBlock Text="{Binding Prop.Title}" Margin="5,2"  />
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsHovered}" Value="True">
+                                        <Setter Property="Background" Value="Yellow" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                    </Border>
                 </DataTemplate>
             </pg:PropertiesGridControl.PropertyTemplate>
         </pg:PropertiesGridControl>

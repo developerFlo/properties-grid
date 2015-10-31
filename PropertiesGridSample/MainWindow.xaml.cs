@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PropertiesGrid.Classes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,18 @@ namespace PropertiesGridSample
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void ItemTextBlock_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            TextBlock tb = (TextBlock)sender;
+            ((ItemViewModel)tb.DataContext).StartEdit();
+        }
+
+        private void ItemComboBox_LostFocus(object sender, EventArgs e)
+        {
+            ComboBox cb = (ComboBox)sender;
+            ((ItemViewModel)cb.DataContext).StopEdit();
         }
     }
 }

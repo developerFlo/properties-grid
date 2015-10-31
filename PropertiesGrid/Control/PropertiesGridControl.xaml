@@ -48,21 +48,11 @@
                         <ScrollViewer CanContentScroll="True" 
                                       VerticalScrollBarVisibility="Auto" 
                                       HorizontalScrollBarVisibility="Auto" 
-                                      ScrollChanged="ScrollViewer_ScrollChanged"
-                                      VirtualizingPanel.IsVirtualizingWhenGrouping="True">
+                                      ScrollChanged="ScrollViewer_ScrollChanged">
                             <ItemsPresenter />
                         </ScrollViewer>
                     </ControlTemplate>
                 </ItemsControl.Template>
-                <ItemsControl.GroupStyle>
-                    <GroupStyle>
-                        <GroupStyle.HeaderTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="Neue Gruppe" />
-                            </DataTemplate>
-                        </GroupStyle.HeaderTemplate>
-                    </GroupStyle>
-                </ItemsControl.GroupStyle>
                 <ItemsControl.ItemTemplateSelector>
                     <c:PGItemTemplateSelector x:Name="itemTemplateSelector" />
                 </ItemsControl.ItemTemplateSelector>
